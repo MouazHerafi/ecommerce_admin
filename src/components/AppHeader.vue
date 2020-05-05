@@ -28,9 +28,10 @@
             <li>
               <a href="#">البطاقات</a>
             </li>
-              <li>
-                  <a href="#">الحسومات</a>
-              </li>
+              <router-link to="/coupons" tag="li">
+                  <a>الحسومات</a>
+              </router-link>
+
           </ul>
         </div>
 

@@ -1,13 +1,125 @@
 <template>
-    
+  <div>
+    <!-- قائمة التصفح العليا -->
+    <ul class="breadcrumb custom-breadcrumb">
+      <li class="breadcrumb-item"><a href="#">لوحتي</a></li>
+      <li class="breadcrumb-item "><a href="#">لوحة التحكم</a></li>
+      <li class="breadcrumb-item active"><a href="#">الحسومات</a></li>
+    </ul>
+    <!-- نهاية قائمة التصفح العليا -->
+    <div class="content-block">
+      <h1><i class="fa fa-tags block-icon" aria-hidden="true"></i>الحسومات</h1>
+
+      <div class="table-op clearfix">
+        <span class="float-right">
+          <span class="input-group">
+            <input title="search" type="text" required="required" />
+            <button type="submit" class="btn light-btn">بحث</button>
+          </span>
+        </span>
+        <router-link :to="{ name: 'AddCoupon' }">
+          <button href="" class="btn btn-primary mr-3 float-left">
+            إضافة حسم جديد
+          </button>
+        </router-link>
+      </div>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>كود الحسم</th>
+            <th>قيمة الحسم</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr v-for="(coupon, i) in coupons.data" :key="i">
+            <td>{{ coupon.code }}</td>
+            <td>{{ coupon.discountRate }}</td>
+            <td>
+              <a
+                @click="showCoupon(coupon.id)"
+                title="Edit"
+                class="btn btn-sm edit"
+                ><i class="material-icons md-24">&#xE254;</i></a
+              >
+            </td>
+            <td>
+              <a
+                @click="deleteCoupon(coupon.id)"
+                class="btn btn-sm delete"
+                title="Delete"
+                ><i class="material-icons md-24">&#xE872;</i></a
+              >
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <Pagination :pagination="coupons" @paginate="getAllCoupon()" :offset="4">
+      </Pagination>
+    </div>
+  </div>
 </template>
 
 <script>
-    export default {
-        name: "Coupons"
+import localVar from "../../LocalVar";
+import Pagination from "../../components/Pagination/Pagination.vue";
+export default {
+  name: "Coupons",
+  data() {
+    return {
+      coupons: {
+        total: 0,
+        per_page: 2,
+        from: 1,
+        to: 0,
+        current_page: 1
+      },
+      offset: 4
+    };
+  },
+  components: {
+    Pagination
+  },
+  async mounted() {
+    await this.getAllCoupon();
+  },
+  methods: {
+    getAllCoupon() {
+      this.$axios
+        .get(
+          localVar.get_api_address() +
+            "coupons?page=" +
+            this.coupons.current_page
+        )
+        .then(res => {
+          console.log(res);
+
+          this.coupons = res.data;
+        })
+        .catch(() => {
+          console.log("handle server error from here");
+        });
+    },
+    showCoupon(couponID) {
+      this.$router.push({ name: "Coupon", params: { CouponID: couponID } });
+    },
+    deleteCoupon(couponID) {
+      this.$axios
+        .delete(localVar.get_api_address() + "coupons/" + couponID)
+        .then(res => {
+          console.log(res);
+
+          //this.$router.push({ name: "Coupons" });
+        })
+        .catch(() => {
+          console.log("handle server error from here");
+        });
     }
+  }
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

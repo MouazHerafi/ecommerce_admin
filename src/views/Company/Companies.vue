@@ -70,11 +70,11 @@
       </table>
 
       <Pagination
-            :pagination="companies"
-            @paginate="getAllCompany()"
-            :offset="4"
-    >
-    </Pagination>
+        :pagination="companies"
+        @paginate="getAllCompany()"
+        :offset="4"
+      >
+      </Pagination>
     </div>
   </div>
 </template>
@@ -132,9 +132,10 @@ export default {
           console.log(res);
 
           //this.$router.push({ name: "Companies" });
-        }).catch(() => {
+        })
+        .catch(() => {
           console.log("handle server error from here");
-      });
+        });
     }
   }
 };

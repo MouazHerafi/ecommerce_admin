@@ -11,7 +11,6 @@
     <div class="content-block">
       <h1>
         <i class="fa fa-user block-icon" aria-hidden="true"></i>ملف المستخدم :
-
       </h1>
 
       <form class="custom-form user-profile-form d-flex flex-wrap">
@@ -27,15 +26,15 @@
         </div>
 
         <div class="form-group">
-        <label>الاسم الكامل للمستخدم</label>
-        <input
-                id="username"
-                v-model="clickedUser.username"
-                class="form-control"
-                type="text"
-                value=""
-        />
-    </div>
+          <label>الاسم الكامل للمستخدم</label>
+          <input
+            id="username"
+            v-model="clickedUser.username"
+            class="form-control"
+            type="text"
+            value=""
+          />
+        </div>
 
         <div class="form-group">
           <label>البريد الالكتروني</label>
@@ -59,17 +58,16 @@
           />
         </div>
 
-          <div class="form-group">
-              <label>العنوان</label>
-              <input
-                      id="location"
-                      v-model="clickedUser.location"
-                      class="form-control"
-                      type="text"
-                      value=""
-              />
-          </div>
-
+        <div class="form-group">
+          <label>العنوان</label>
+          <input
+            id="location"
+            v-model="clickedUser.location"
+            class="form-control"
+            type="text"
+            value=""
+          />
+        </div>
 
         <div class="form-group">
           <label>كلمة المرور</label>
@@ -80,7 +78,6 @@
             type="password"
           />
         </div>
-
 
         <!--<div class="form-group">
           <label>الشركة المطلوبة</label>
@@ -108,34 +105,33 @@
           </select>
         </div>-->
 
-              <div class="form-group change-pass">
-
-                      <p>هل تريد تغيير كلمة المرور؟</p>
-                      <toggle-button v-model="isNewPassword"
-                                     :labels="{checked: 'لا', unchecked: 'نعم'}"
-                                     :width="55"
-                                     :height="25"
-                      />
-
-              </div>
+        <div class="form-group change-pass">
+          <p>هل تريد تغيير كلمة المرور؟</p>
+          <toggle-button
+            v-model="isNewPassword"
+            :labels="{ checked: 'لا', unchecked: 'نعم' }"
+            :width="55"
+            :height="25"
+          />
+        </div>
 
         <div v-if="isNewPassword" class="form-group">
           <label>كلمة المرور الجديدة</label>
           <input
-                  id="newPassword"
-                  v-model="clickedUser.newPassword"
-                  class="form-control"
-                  type="password"
+            id="newPassword"
+            v-model="clickedUser.newPassword"
+            class="form-control"
+            type="password"
           />
         </div>
 
         <div v-if="isNewPassword" class="form-group">
           <label>تأكيد كلمة المرور الجديدة</label>
           <input
-                  id="newPassword_confirmation"
-                  v-model="clickedUser.newPassword_confirmation"
-                  class="form-control"
-                  type="password"
+            id="newPassword_confirmation"
+            v-model="clickedUser.newPassword_confirmation"
+            class="form-control"
+            type="password"
           />
         </div>
         <div class="form-group">
@@ -147,7 +143,7 @@
 </template>
 
 <script>
-  import localVar from "../../LocalVar";
+import localVar from "../../LocalVar";
 export default {
   name: "User",
   data: function() {
@@ -160,31 +156,27 @@ export default {
         location: "",
         password: "",
         newPassword: "",
-          newPassword_confirmation:"",
-
+        newPassword_confirmation: ""
       },
-      isNewPassword: false,
-
-
+      isNewPassword: false
     };
   },
   async mounted() {
-
     await this.getUser();
-
   },
   methods: {
     getUser() {
       console.log(this.$route.params.id);
       this.$axios
-              .get(localVar.get_api_address() + "users/" + this.$route.params.id)
-              .then(res => {
-                console.log(res);
+        .get(localVar.get_api_address() + "users/" + this.$route.params.id)
+        .then(res => {
+          console.log(res);
 
-                this.clickedUser = res.data.data;
-              }).catch(() => {
-        console.log("handle server error from here");
-      });
+          this.clickedUser = res.data.data;
+        })
+        .catch(() => {
+          console.log("handle server error from here");
+        });
     },
     updateUser() {
       /* this.$swal.fire({
@@ -193,21 +185,21 @@ export default {
             text: 'Something went wrong!',
             footer: '<a href>Why do I have this issue?</a>'
             })*/
-        console.log(this.clickedUser);
-        this.$axios
-            .put(
-                localVar.get_api_address() + "users/" + this.$route.params.id,
-                this.clickedUser
-            )
-            .then(res => {
-                console.log(res);
+      console.log(this.clickedUser);
+      this.$axios
+        .put(
+          localVar.get_api_address() + "users/" + this.$route.params.id,
+          this.clickedUser
+        )
+        .then(res => {
+          console.log(res);
 
-                //this.$router.push({ name: "Users" });
-            }).catch(() => {
-            console.log("handle server error from here");
+          //this.$router.push({ name: "Users" });
+        })
+        .catch(() => {
+          console.log("handle server error from here");
         });
     }
   }
 };
 </script>
-

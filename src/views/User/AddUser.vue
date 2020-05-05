@@ -19,52 +19,52 @@
         class="custom-form user-profile-form d-flex flex-wrap"
       >
         <div class="form-group">
-        <label>اسم المستخدم</label>
-        <input
-                id="name"
-                name="name"
-                v-model="newUser.name"
-                class="form-control"
-                :class="{
+          <label>اسم المستخدم</label>
+          <input
+            id="name"
+            name="name"
+            v-model="newUser.name"
+            class="form-control"
+            :class="{
               'error-feild': isSubmitted && $v.newUser.name.$error
             }"
-                type="text"
-        />
-        <div
-                v-if="isSubmitted && !$v.newUser.name.required"
-                class="invalid-feedback"
-        >
-          {{ msg_req }}
-        </div>
-        <div
-                v-if="isSubmitted && !$v.newUser.name.minLength"
-                class="invalid-feedback"
-        >
-          {{ msg_min_length }}
-        </div>
-      </div>
-
-        <div class="form-group">
-          <label>الاسم الكامل للمستخدم</label>
-          <input
-                  id="username"
-                  name="username"
-                  v-model="newUser.username"
-                  class="form-control"
-                  :class="{
-              'error-feild': isSubmitted && $v.newUser.username.$error
-            }"
-                  type="text"
+            type="text"
           />
           <div
-                  v-if="isSubmitted && !$v.newUser.username.required"
-                  class="invalid-feedback"
+            v-if="isSubmitted && !$v.newUser.name.required"
+            class="invalid-feedback"
           >
             {{ msg_req }}
           </div>
           <div
-                  v-if="isSubmitted && !$v.newUser.username.minLength"
-                  class="invalid-feedback"
+            v-if="isSubmitted && !$v.newUser.name.minLength"
+            class="invalid-feedback"
+          >
+            {{ msg_min_length }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>الاسم الكامل للمستخدم</label>
+          <input
+            id="username"
+            name="username"
+            v-model="newUser.username"
+            class="form-control"
+            :class="{
+              'error-feild': isSubmitted && $v.newUser.username.$error
+            }"
+            type="text"
+          />
+          <div
+            v-if="isSubmitted && !$v.newUser.username.required"
+            class="invalid-feedback"
+          >
+            {{ msg_req }}
+          </div>
+          <div
+            v-if="isSubmitted && !$v.newUser.username.minLength"
+            class="invalid-feedback"
           >
             {{ msg_min_length }}
           </div>
@@ -114,16 +114,18 @@
         <div class="form-group">
           <label>العنوان</label>
           <input
-                  id="location"
-                  name="location"
-                  v-model="newUser.location"
-                  class="form-control"
-                  type="text"
-                  :class="{ 'error-feild': isSubmitted && $v.newUser.location.$error }"
+            id="location"
+            name="location"
+            v-model="newUser.location"
+            class="form-control"
+            type="text"
+            :class="{
+              'error-feild': isSubmitted && $v.newUser.location.$error
+            }"
           />
           <div
-                  v-if="isSubmitted && !$v.newUser.location.required"
-                  class="invalid-feedback"
+            v-if="isSubmitted && !$v.newUser.location.required"
+            class="invalid-feedback"
           >
             {{ msg_req }}
           </div>
@@ -157,10 +159,11 @@
             v-model="newUser.password_confirmation"
             class="form-control"
             :class="{
-              'error-feild': isSubmitted && $v.newUser.password_confirmation.$error
+              'error-feild':
+                isSubmitted && $v.newUser.password_confirmation.$error
             }"
-           type="password"
-         />
+            type="password"
+          />
           <div
             v-if="isSubmitted && !$v.newUser.password_confirmation.required"
             class="invalid-feedback"
@@ -168,14 +171,16 @@
             {{ msg_req }}
           </div>
           <div
-            v-if="isSubmitted && !$v.newUser.password_confirmation.sameAsPassword"
+            v-if="
+              isSubmitted && !$v.newUser.password_confirmation.sameAsPassword
+            "
             class="invalid-feedback"
           >
             {{ msg_password_match }}
           </div>
         </div>
 
-       <!-- <div class="form-group">
+        <!-- <div class="form-group">
           <label for="company">الشركة المطلوبة</label>
           <select
             v-on:input="showBranches($event.target.value)"
@@ -201,7 +206,7 @@
           </div>
         </div>-->
 
-       <!-- <div class="form-group">
+        <!-- <div class="form-group">
           <label for="branch">الفرع المطلوب</label>
           <select
             :disabled="isDisabled == true"
@@ -254,12 +259,11 @@ export default {
         password_confirmation: "",
         email: "",
         phone: "",
-        location:""
+        location: ""
         //company: "",
         //branch: ""
       },
-      isSubmitted: false,
-
+      isSubmitted: false
     };
   },
   validations: {
@@ -288,8 +292,8 @@ export default {
       },
       location: {
         required
-      },
-     /* branch: {
+      }
+      /* branch: {
         required
       }*/
     }
@@ -308,16 +312,16 @@ export default {
       console.log(this.newUser);
 
       this.$axios
-              .post(localVar.get_api_address() + "users/", this.newUser)
-              .then(res => {
-                //this.$router.push({ name: "Users" });
-                console.log(res.data);
-              })
-              .catch(() => {
-                console.log("handle server error from here");
-              });
+        .post(localVar.get_api_address() + "users/", this.newUser)
+        .then(res => {
+          //this.$router.push({ name: "Users" });
+          console.log(res.data);
+        })
+        .catch(() => {
+          console.log("handle server error from here");
+        });
     }
-   /* showBranches(i) {
+    /* showBranches(i) {
       //this.getBranches(i);
       this.isDisabled = false;
     },
