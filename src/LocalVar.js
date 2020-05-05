@@ -1,6 +1,6 @@
 export default{
     get_api_address(){
-        return "http://localhost:8000/api/";
+        return "http://localhost:8000/api/v1/";
     },
     get_msg_req(){
         return "هذا الحقل مطلوب";
