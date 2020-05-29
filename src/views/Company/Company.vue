@@ -10,7 +10,7 @@
 
     <div class="content-block">
       <h1>
-        <i class="fa fa-user block-icon" aria-hidden="true"></i>ملف الشركة
+        <i class="fa fa-building block-icon" aria-hidden="true"></i>ملف الشركة
       </h1>
 
       <form class="custom-form user-profile-form d-flex flex-wrap">

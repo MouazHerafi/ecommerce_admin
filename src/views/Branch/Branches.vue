@@ -8,7 +8,7 @@
     </ul>
     <!-- نهاية قائمة التصفح العليا -->
     <div class="content-block">
-      <h1><i class="fa fa-tags block-icon" aria-hidden="true"></i>الأفرع</h1>
+      <h1><i class="fa fa-university block-icon" aria-hidden="true"></i>الأفرع</h1>
 
       <div class="table-op clearfix">
         <span class="float-right">
@@ -27,9 +27,9 @@
         <thead>
           <tr>
             <th>الاسم</th>
-            <th>العنوان</th>
-            <th>رقم الهاتف</th>
-            <th>البريد الالكتروني</th>
+            <th class="hidden-sm-down">العنوان</th>
+            <th class="hidden-sm-down">رقم الهاتف</th>
+            <th class="hidden-sm-down">البريد الالكتروني</th>
             <th>المنتجات</th>
           </tr>
         </thead>
@@ -39,9 +39,9 @@
             <td>
               <a>{{ branch.name }}</a>
             </td>
-            <td>{{ branch.location }}</td>
-            <td>{{ branch.phone }}</td>
-            <td>{{ branch.email }}</td>
+            <td class="hidden-sm-down">{{ branch.location }}</td>
+            <td class="hidden-sm-down">{{ branch.phone }}</td>
+            <td class="hidden-sm-down">{{ branch.email }}</td>
             <td>
               <a @click="showProducts(branch.id)" class="btn btn-sm linkGo"
                 ><i class="material-icons">keyboard_arrow_left</i></a

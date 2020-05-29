@@ -22,7 +22,7 @@
         </span>
         <router-link :to="{ name: 'AddUser' }">
           <button class="btn btn-primary mr-3 float-left">
-            إضافة مستخدم جديد
+            <i class="material-icons">person_add</i>
           </button>
         </router-link>
       </div>
@@ -31,10 +31,10 @@
         <thead>
           <tr>
             <th>الاسم</th>
-            <th>البريد الالكتروني</th>
-            <th>رقم الهاتف</th>
+            <th class="hidden-sm-down">البريد الالكتروني</th>
+            <th class="hidden-sm-down">رقم الهاتف</th>
             <th>الاسم الكامل</th>
-            <th>العنوان</th>
+            <th class="hidden-sm-down">العنوان</th>
             <th></th>
             <th></th>
           </tr>
@@ -45,10 +45,10 @@
             <td>
               <a>{{ user.name }}</a>
             </td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.phone }}</td>
+            <td class="hidden-sm-down">{{ user.email }}</td>
+            <td class="hidden-sm-down">{{ user.phone }}</td>
             <td>{{ user.username }}</td>
-            <td>{{ user.location }}</td>
+            <td class="hidden-sm-down">{{ user.location }}</td>
             <td>
               <a
                 @click="rowClicked(user.id)"

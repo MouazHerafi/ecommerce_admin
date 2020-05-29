@@ -9,7 +9,7 @@
     <!-- نهاية قائمة التصفح العليا -->
 
     <div class="content-block">
-      <h1><i class="fa fa-user block-icon" aria-hidden="true"></i>ملف الفرع</h1>
+      <h1><i class="fa fa-university block-icon" aria-hidden="true"></i>ملف الفرع</h1>
 
       <form class="custom-form user-profile-form d-flex flex-wrap">
         <div class="form-group">

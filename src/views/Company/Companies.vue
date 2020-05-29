@@ -8,7 +8,7 @@
     </ul>
     <!-- نهاية قائمة التصفح العليا -->
     <div class="content-block">
-      <h1><i class="fa fa-tags block-icon" aria-hidden="true"></i>الشركات</h1>
+      <h1><i class="fa fa-building block-icon" aria-hidden="true"></i>الشركات</h1>
 
       <div class="table-op clearfix">
         <span class="float-right">
@@ -18,7 +18,7 @@
           </span>
         </span>
         <router-link :to="{ name: 'AddCompany' }">
-          <button href="" class="btn btn-primary mr-3 float-left">
+          <button class="btn btn-primary mr-3 float-left">
             إضافة شركة جديدة
           </button>
         </router-link>
@@ -27,9 +27,9 @@
         <thead>
           <tr>
             <th>الاسم</th>
-            <th>الوصف</th>
-            <th>البريد الالكتروني</th>
-            <th>رقم الهاتف</th>
+            <th class="hidden-sm-down">الوصف</th>
+            <th class="hidden-sm-down">البريد الالكتروني</th>
+            <th class="hidden-sm-down">رقم الهاتف</th>
             <th>أفرع الشركة</th>
             <th></th>
             <th></th>
@@ -41,9 +41,9 @@
             <td>
               <a>{{ company.name }}</a>
             </td>
-            <td>شركة مختصة بالألبسة الرجالية</td>
-            <td>company@gmail.com</td>
-            <td>{{ company.phone }}</td>
+            <td class="hidden-sm-down">شركة مختصة بالألبسة الرجالية</td>
+            <td class="hidden-sm-down">company@gmail.com</td>
+            <td class="hidden-sm-down">{{ company.phone }}</td>
             <td>
               <a @click="showBranches(company.id)" class="btn btn-sm linkGo"
                 ><i class="material-icons md-24">menu_open</i></a
