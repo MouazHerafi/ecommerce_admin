@@ -42,6 +42,12 @@
           >
             {{ msg_min_length }}
           </div>
+          <div
+                  v-for="(error, i) in errors.name" :key="i"
+                  class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
         </div>
 
         <div class="form-group">
@@ -68,6 +74,12 @@
           >
             {{ msg_min_length }}
           </div>
+          <div
+                  v-for="(error, i) in errors.username" :key="i"
+                  class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
         </div>
 
         <div class="form-group">
@@ -91,6 +103,12 @@
           >
             {{ msg_email }}
           </div>
+          <div
+                  v-for="(error, i) in errors.email" :key="i"
+                  class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
         </div>
 
         <div class="form-group">
@@ -108,6 +126,12 @@
             class="invalid-feedback"
           >
             {{ msg_req }}
+          </div>
+          <div
+                  v-for="(error, i) in errors.phone" :key="i"
+                  class="invalid-feedback"
+          >
+            {{ error }}
           </div>
         </div>
 
@@ -129,6 +153,12 @@
           >
             {{ msg_req }}
           </div>
+          <div
+                  v-for="(error, i) in errors.location" :key="i"
+                  class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
         </div>
 
         <div class="form-group">
@@ -148,6 +178,12 @@
             class="invalid-feedback"
           >
             {{ msg_req }}
+          </div>
+          <div
+                  v-for="(error, i) in errors.password" :key="i"
+                  class="invalid-feedback"
+          >
+            {{ error }}
           </div>
         </div>
 
@@ -263,7 +299,16 @@ export default {
         //company: "",
         //branch: ""
       },
-      isSubmitted: false
+      isSubmitted: false,
+      errors:{
+        email: [],
+        phone: [],
+        username: [],
+        name: [],
+        loaction: [],
+        password: []
+      }
+
     };
   },
   validations: {
@@ -300,26 +345,71 @@ export default {
   },
   methods: {
     handleSubmit() {
-      this.isSubmitted = true;
-      this.$v.$touch();
-      if (this.$v.$invalid) {
-        return;
-      }
+       this.$swal.fire({
+         title: 'هل تريد الاستمرار؟',
+         icon: 'question',
+         iconHtml: '؟',
+         confirmButtonText: 'نعم',
+         cancelButtonText: 'لا',
+         showCancelButton: true,
+         showCloseButton: true,
+         preConfirm: () => {
+           this.isSubmitted = true;
+           this.$v.$touch();
+           if (this.$v.$invalid) {
+             return;
+           }
 
-      this.addNewUser();
+            this.addNewUser();
+
+
+         }
+            })
+
     },
     addNewUser() {
-      console.log(this.newUser);
-
+      //console.log(this.newUser);
       this.$axios
         .post(localVar.get_api_address() + "users/", this.newUser)
         .then(res => {
           //this.$router.push({ name: "Users" });
+
+          this.$swal.fire({
+            icon: 'success',
+            title: 'تمت إضافة الموظف بنجاح!',
+            showConfirmButton: false,
+           // timer: 1500
+          })
+
           console.log(res.data);
         })
-        .catch(() => {
-          console.log("handle server error from here");
-        });
+              .catch(error => {
+                if (error.response) {
+                  // The request was made and the server responded with a status code
+                  // that falls out of the range of 2xx
+
+                  this.errors = error.response.data.errors;
+                  this.$swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.response.data.message,
+                  })
+
+                  //console.log(error.response.status);
+                  //console.log(error.response.data.errors);
+                 // console.log(error.response.headers);
+                } else if (error.request) {
+                  // The request was made but no response was received
+                  // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                  // http.ClientRequest in node.js
+                  console.log(error.request);
+                } else {
+                  // Something happened in setting up the request that triggered an Error
+                  console.log('Error', error.message);
+                }
+                console.log(error.config);
+              })
+        ;
     }
     /* showBranches(i) {
       //this.getBranches(i);

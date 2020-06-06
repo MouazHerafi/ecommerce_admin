@@ -6,7 +6,7 @@
           <img src="/images/img-01.png" alt="IMG" />
         </div>
 
-        <form class="login100-form">
+        <form @submit.prevent="loginNow" class="login100-form">
           <span class="login100-form-title">
             تسجيل الدخول
           </span>
@@ -40,7 +40,7 @@
           </div>
 
           <div class="container-login100-form-btn">
-            <button class="login100-form-btn" @click="loginNow()">
+            <button class="login100-form-btn">
               تأكيد
             </button>
           </div>
@@ -51,6 +51,8 @@
 </template>
 
 <script>
+//import localVar from "../LocalVar";
+import { HTTP } from "../http-common";
 export default {
   name: "Login",
   data() {
@@ -63,19 +65,18 @@ export default {
   },
   methods: {
     loginNow() {
-      //console.log(this.user);
-      //this.$axios.post("url",this.user)
-      //.then(res=>{
-      //console.log(res);
-      //if(res.data.error){
-      //	alert(res.data.message);
-      //	}else{
-      //console.log(res.data);
-      //	localStorage.setItem("token",res.data.token);
-      this.$router.push({ name: "Home" });
-      //	}
-
-      //});
+      console.log(this.user);
+      HTTP.post("login", this.user /*,{errorHandle: true}*/).then(res => {
+        localStorage.setItem(
+          "token",
+          res.data.token_type + " " + res.data.access_token
+        );
+        this.$router.push({ name: "Home" });
+      });
+      /*.catch(() => {
+              //console.log(error.response.data.error);
+                console.log("handle server error from here");
+            })*/
     }
   }
 };

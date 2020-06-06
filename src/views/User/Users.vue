@@ -26,7 +26,11 @@
           </button>
         </router-link>
       </div>
-
+      <loading
+        :active.sync="isLoading"
+        :is-full-page="false"
+        color="#ef3e58"
+      ></loading>
       <table class="table table-striped">
         <thead>
           <tr>
@@ -77,8 +81,10 @@
 </template>
 
 <script>
+import { HTTP } from "../../http-common";
 import localVar from "../../LocalVar";
 import Pagination from "../../components/Pagination/Pagination.vue";
+
 export default {
   data: function() {
     return {
@@ -89,7 +95,8 @@ export default {
         to: 0,
         current_page: 1
       },
-      offset: 4
+      offset: 4,
+      isLoading: false
     };
   },
   name: "Users",
@@ -101,18 +108,18 @@ export default {
   },
   methods: {
     getAllUser() {
-      this.$axios
-        .get(
-          localVar.get_api_address() + "users?page=" + this.users.current_page
-        )
+      this.isLoading = true;
+      HTTP.get("v1/users?page=" + this.users.current_page)
         .then(res => {
           console.log(res);
 
           this.users = res.data;
         })
-        .catch(() => {
+        /*.catch(error => {
+          console.log(error.response.data);
           console.log("handle server error from here");
-        });
+        })*/
+        .finally(() => (this.isLoading = false));
     },
     deleteUser(userID) {
       this.$axios

@@ -1,7 +1,7 @@
 <template>
   <div>
     <app-header />
-    
+
     <div id="siteContent" class="container">
       <router-view></router-view>
     </div>
@@ -15,7 +15,7 @@ export default {
   name: "TheContainer",
   components: {
     AppHeader
-    
+
   },
 };
 </script>

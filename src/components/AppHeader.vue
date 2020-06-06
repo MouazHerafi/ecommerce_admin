@@ -8,7 +8,7 @@
                      class="fa fa-bars" id="open-button"></a>
           <div class="navbar-brand p-0">
             <a href="/"><img src="/images/logo.png" alt="لوحتي"/></a>
-            <ul class="float-left p-0 m-0 list-unstyled d-flex flex-row">
+            <!--<ul class="float-left p-0 m-0 list-unstyled d-flex flex-row">
               <router-link to="/" tag="li">
                 <a>الرئيسية</a>
               </router-link>
@@ -34,7 +34,7 @@
                     <a>الحسومات</a>
                 </router-link>
 
-            </ul>
+            </ul>-->
           </div>
 
           <ul class="float-left p-0 m-0 list-unstyled d-flex flex-row">
@@ -49,7 +49,7 @@
             </li>
             <li>
               <div class="dropdown user-dropdown">
-                <a data-toggle="dropdown" id="dropdownMenuButton">
+                <a href="#" data-toggle="dropdown" id="dropdownMenuButton">
                   <img alt="" class="user-thumb" src="/images/user.png" />
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -76,18 +76,27 @@
                     ><i class=" fa fa-home"></i>الرئيسية</a></li>
                   </router-link>
                 <router-link to="/companies">
-                    <li @click="close()"><a @click="close()"><i class=" fa fa-home"></i>الشركات و الأفرع</a></li>
+                    <li @click="close()"><a @click="close()"><i class=" fa fa-building"></i>الشركات</a></li>
                 </router-link>
                 <router-link to="/categories">
-              <li @click="close()"><a @click="close()"><i class="fa fa-bar-chart"></i>الفئات</a></li>
+              <li @click="close()"><a @click="close()"><i class="fa fa-tags"></i>الفئات</a></li>
             </router-link>
                 <router-link to="/users">
-              <li @click="close()"><a @click="close()"><i class="fa fa-users"></i>المستخدمين</a></li>
+              <li @click="close()"><a @click="close()"><i class="fa fa-users"></i>الموظفين</a></li>
             </router-link>
-                <li @click="close()"><a @click="close()" href="index.html"><i class="fa fa-shopping-cart"></i>الطلبات</a></li>
-                <li @click="close()"><a @click="close()" href="customers.html"><i class="fa fa-users"></i>الزبائن</a></li>
-                <li @click="close()"><a @click="close()" href="customers.html"><i class="fa fa-users"></i>البطاقات</a></li>
-                
+              <router-link to="/users">
+                <li @click="close()"><a @click="close()"><i class="fa fa-users"></i>الزبائن</a></li>
+              </router-link>
+              <router-link to="/">
+                <li @click="close()"><a @click="close()"><i class="fa fa-shopping-cart"></i>الطلبات</a></li>
+              </router-link>
+              <router-link to="/">
+                <li @click="close()"><a @click="close()"><i class="fa fa-shopping-cart"></i>البطاقات</a></li>
+              </router-link>
+              <router-link to="/coupons">
+                <li @click="close()"><a @click="close()"><i class="fa fa-shopping-cart"></i>الحسومات</a></li>
+              </router-link>
+
             </ul>
         </div>
 
@@ -108,12 +117,12 @@ export default {
 
 
   },
-  mounted() {
+  created() {
     //this.isOpen=false;
 
     var token = localStorage.getItem("token");
     if (!token) {
-      //this.$router.push({name: "Login"});
+      this.$router.push({name: "Login"});
     }
   },
   methods: {
