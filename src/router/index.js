@@ -66,7 +66,8 @@ const routes = [
               label: "User Details"
             },
             name: "User",
-            component: User
+            component: User,
+            props: true
           }
         ]
       },
@@ -232,7 +233,8 @@ const routes = [
         component: Error404
       }
     ]
-  }
+  },
+  { path: '*', component: Error404 }
 ];
 
 const router = new VueRouter({

@@ -13,7 +13,7 @@
         <i class="fa fa-plus block-icon" aria-hidden="true"></i>إضافة شركة جديدة
       </h1>
 
-      <form class="custom-form user-profile-form d-flex flex-wrap">
+      <form @submit.prevent="handleSubmit" class="custom-form user-profile-form d-flex flex-wrap">
         <div class="form-group">
           <label>اسم الشركة</label>
           <input
@@ -45,9 +45,9 @@
         </div>
 
         <div class="form-group">
-          <a class="btn btn-primary" @click="addNewCompany()">
+          <button class="btn btn-primary">
             تأكيد
-          </a>
+          </button>
         </div>
       </form>
     </div>
@@ -55,7 +55,8 @@
 </template>
 
 <script>
-import localVar from "../../LocalVar";
+  import {MESSAGE_ERROR, HTTP } from "../../http-common";
+  import  { COMPANIES_API } from "../../LocalVar";
 export default {
   name: "AddCompany",
   data: function() {
@@ -69,17 +70,51 @@ export default {
     };
   },
   methods: {
+    handleSubmit() {
+      this.$swal.fire({
+        title: 'هل تريد الاستمرار؟',
+        icon: 'question',
+        iconHtml: '؟',
+        confirmButtonText: 'نعم',
+        cancelButtonText: 'لا',
+        showCancelButton: true,
+        showCloseButton: true,
+        preConfirm: () => {
+          /*this.isSubmitted = true;
+          this.$v.$touch();
+          if (this.$v.$invalid) {
+            return;
+          }*/
+
+          this.addNewCompany();
+
+
+        }
+      })
+
+    }
+    ,
     addNewCompany() {
       console.log(this.newCompany);
-      this.$axios
-        .post(localVar.get_api_address() + "companies/", this.newCompany)
+      HTTP
+        .post(COMPANIES_API, this.newCompany)
         .then(res => {
           //this.$router.push({ name: "Companies" });
+          this.$swal.fire({
+            icon: 'success',
+            title: 'تمت إضافة الشركة بنجاح!',
+            showConfirmButton: false,
+            // timer: 1500
+          })
           console.log(res.data);
         })
-        .catch(() => {
-          console.log("handle server error from here");
-        });
+              .catch(() => {
+                this.$swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: MESSAGE_ERROR,
+                })
+              });
     }
   }
 };

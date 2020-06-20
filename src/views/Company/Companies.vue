@@ -80,7 +80,9 @@
 </template>
 
 <script>
-import localVar from "../../LocalVar";
+  import { HTTP } from "../../http-common";
+  import localVar from "../../LocalVar";
+  import { COMPANIES_API } from "../../LocalVar";
 import Pagination from "../../components/Pagination/Pagination.vue";
 export default {
   name: "Companies",
@@ -104,10 +106,10 @@ export default {
   },
   methods: {
     getAllCompany() {
-      this.$axios
+      HTTP
         .get(
-          localVar.get_api_address() +
-            "companies?page=" +
+                COMPANIES_API +
+            "?page=" +
             this.companies.current_page
         )
         .then(res => {

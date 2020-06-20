@@ -8,7 +8,7 @@
     </ul>
     <!-- نهاية قائمة التصفح العليا -->
     <div class="content-block">
-      <h1><i class="fa fa-university block-icon" aria-hidden="true"></i>الأفرع</h1>
+      <h1><i class="fa fa-university block-icon" aria-hidden="true"></i>{{company.name}}</h1>
 
       <div class="table-op clearfix">
         <span class="float-right">
@@ -28,20 +28,20 @@
           <tr>
             <th>الاسم</th>
             <th class="hidden-sm-down">العنوان</th>
-            <th class="hidden-sm-down">رقم الهاتف</th>
-            <th class="hidden-sm-down">البريد الالكتروني</th>
+            <th class="hidden-sm-down">الموظف</th>
+            <th class="hidden-sm-down">الرصيد</th>
             <th>المنتجات</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr v-for="(branch, i) in branches" :key="i">
+          <tr v-for="(branch, i) in branches.data" :key="i">
             <td>
               <a>{{ branch.name }}</a>
             </td>
             <td class="hidden-sm-down">{{ branch.location }}</td>
-            <td class="hidden-sm-down">{{ branch.phone }}</td>
-            <td class="hidden-sm-down">{{ branch.email }}</td>
+            <td class="hidden-sm-down">{{ branch.user.username }}</td>
+            <td class="hidden-sm-down">{{ branch.balance }}</td>
             <td>
               <a @click="showProducts(branch.id)" class="btn btn-sm linkGo"
                 ><i class="material-icons">keyboard_arrow_left</i></a
@@ -64,72 +64,66 @@
         </tbody>
       </table>
 
-      <div class="custom-pag clearfix">
-        <ul class="pagination float-left">
-          <li class="page-item">
-            <a class="page-link" href="#">
-              &laquo;
-            </a>
-          </li>
-          <li class="page-item"><a class="page-link" href="#">1</a></li>
-          <li class="page-item active"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item">
-            <a class="page-link" href="#">
-              &raquo;
-            </a>
-          </li>
-        </ul>
-        <div class="float-left">
-          8 أفرع
-        </div>
-      </div>
+      <Pagination
+              :pagination="branches"
+              @paginate="getAllBranch()"
+              :offset="4"
+      >
+      </Pagination>
     </div>
   </div>
 </template>
 
 <script>
+  import { HTTP } from "../../http-common";
+ // import localVar from "../../LocalVar";
+  //import { BRANCHES_API } from "../../LocalVar";
+  import { COMPANIES_API } from "../../LocalVar";
+  import Pagination from "../../components/Pagination/Pagination.vue";
 export default {
   name: "Branches",
   data: function() {
     return {
-      branches: [
-        {
-          id: 1,
-          name: "b1",
-          location: "المزة",
-          email: "moaaz@gmail.com",
-          phone: "0948883744"
-        },
-        {
-          id: 2,
-          name: "b2",
-          location: "قدسيا",
-          email: "moaaz@gmail.com",
-          phone: "0948883744"
-        }
-      ]
+      branches: {
+        total: 0,
+        per_page: 2,
+        from: 1,
+        to: 0,
+        current_page: 1
+      },
+      company:{
+        id:0,
+        name:"",
+        phone:""
+
+      },
+      offset: 4
     };
   },
-  mounted() {
-    // this.getAllBranch();
+  components: {
+    Pagination
+  },
+  async mounted() {
+    await this.getAllBranch();
   },
   methods: {
-    /*getAllBranch(){
-                this.$axios.get("url"+this.$route.params.id)
-                .then(res=>{
-                    console.log(res);
-                    if(res.data.error){
-                        alert(res.data.message);
-                    }else{
-                        //console.log(res.data);
-                this.branches = res.data.companies;
-                        
-                    }
-                    
-                });
-        },*/
+    getAllBranch() {
+      HTTP
+              .get(
+                      COMPANIES_API +
+                      "/"+ this.$route.params.id +"/branches?page=" +
+                      this.branches.current_page
+              )
+              .then(res => {
+                console.log(res);
 
+                this.company = res.data.data[0].company;
+                this.branches = res.data;
+              })
+              .catch(() => {
+                console.log("handle server error from here");
+              });
+    },
     showBranch(branchID) {
       this.$router.push({ name: "Branch", params: { branchID: branchID } });
     },

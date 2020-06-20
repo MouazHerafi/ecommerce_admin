@@ -82,7 +82,7 @@
 
 <script>
 import { HTTP } from "../../http-common";
-import localVar from "../../LocalVar";
+import { USERS_API } from "../../LocalVar";
 import Pagination from "../../components/Pagination/Pagination.vue";
 
 export default {
@@ -109,7 +109,7 @@ export default {
   methods: {
     getAllUser() {
       this.isLoading = true;
-      HTTP.get("v1/users?page=" + this.users.current_page)
+      HTTP.get(USERS_API + "?page=" + this.users.current_page)
         .then(res => {
           console.log(res);
 
@@ -123,7 +123,7 @@ export default {
     },
     deleteUser(userID) {
       this.$axios
-        .delete(localVar.get_api_address() + "users/" + userID)
+        .delete(USERS_API + userID)
         .then(res => {
           console.log(res);
 
@@ -135,7 +135,7 @@ export default {
     },
 
     rowClicked(userID) {
-      this.$router.push({ name: "User", params: { id: userID } });
+      this.$router.push({ name: "User", params: { id: userID }});
     }
   }
 };

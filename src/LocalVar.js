@@ -1,6 +1,12 @@
+export const URL_API = "v1/";
+export const USERS_API = URL_API + "users";
+export const LOGIN_API = "login";
+export const COMPANIES_API = URL_API + "companies";
+export const BRANCHES_API = URL_API + "branches";
+
 export default {
   get_api_address() {
-    return "http://localhost:8000/api/v1/";
+    return "http://10.65.1.110:8000/api/v1/";
   },
   get_msg_req() {
     return "هذا الحقل مطلوب";
@@ -15,3 +21,4 @@ export default {
     return `يجب أن يتكون الحقل من ${numCharacter} محارف على الأقل`;
   }
 };
+

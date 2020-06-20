@@ -1,7 +1,11 @@
 import axios from "axios";
 import router from "./router";
+const IP = "http://10.65.1.110";
+const PORT = "8000";
+// eslint-disable-next-line no-unused-vars
+export let MESSAGE_ERROR = "";
 export const HTTP = axios.create({
-  baseURL: `http://localhost:8000/api/`,
+  baseURL: IP + ":" + PORT +`/api/`,
   headers: {
     Authorization: localStorage.getItem("token"),
     Content_Type: "application/json;charset=UTF-8"
@@ -25,10 +29,13 @@ HTTP.interceptors.response.use(
           break;
 
         case 401:
-          router.replace({
-            path: "/pages/login"
-            //query: { redirect: router.currentRoute.fullPath }
-          });
+          var Unauthorised_error_msg = error.response.data.message;
+          if (Unauthorised_error_msg === "Unauthenticated.") {
+            router.replace({
+              path: "/pages/login"
+              //query: { redirect: router.currentRoute.fullPath }
+            });
+          }
           break;
         case 403:
           router.replace({
@@ -37,7 +44,10 @@ HTTP.interceptors.response.use(
           });
           break;
         case 404:
-          alert("page not exist");
+          router.replace({
+            path: "/pages",
+            query: { redirect: router.currentRoute.fullPath }
+          });
           break;
         case 502:
           setTimeout(() => {
@@ -48,8 +58,11 @@ HTTP.interceptors.response.use(
               }
             });
           }, 1000);
+          break;
+        case 422:
+          MESSAGE_ERROR = error.response.data.message;
       }
       return Promise.reject(error.response);
     }
   }
-);
+)

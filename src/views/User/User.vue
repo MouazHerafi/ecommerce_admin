@@ -146,6 +146,12 @@
 import localVar from "../../LocalVar";
 export default {
   name: "User",
+  props: {
+    id: {
+      type: String,
+      required: true
+    }
+  },
   data: function() {
     return {
       clickedUser: {
@@ -166,6 +172,7 @@ export default {
   },
   methods: {
     getUser() {
+      console.log("helooo  : "+this.$props.id);
       console.log(this.$route.params.id);
       this.$axios
         .get(localVar.get_api_address() + "users/" + this.$route.params.id)

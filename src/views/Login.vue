@@ -51,7 +51,7 @@
 </template>
 
 <script>
-//import localVar from "../LocalVar";
+import { LOGIN_API } from "../LocalVar";
 import { HTTP } from "../http-common";
 export default {
   name: "Login",
@@ -66,17 +66,23 @@ export default {
   methods: {
     loginNow() {
       console.log(this.user);
-      HTTP.post("login", this.user /*,{errorHandle: true}*/).then(res => {
-        localStorage.setItem(
-          "token",
-          res.data.token_type + " " + res.data.access_token
-        );
-        this.$router.push({ name: "Home" });
-      });
-      /*.catch(() => {
-              //console.log(error.response.data.error);
-                console.log("handle server error from here");
-            })*/
+      HTTP.post(LOGIN_API, this.user)
+        .then(res => {
+          localStorage.setItem(
+            "token",
+            res.data.token_type + " " + res.data.access_token
+          );
+          this.$router.push({ name: "Home" });
+        })
+        .catch(error => {
+          if (error.data.error === "Unauthorised") {
+            this.$swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "يوجد خطأ في البريد الالكتروني أو كلمة المرور!"
+            });
+          }
+        });
     }
   }
 };
