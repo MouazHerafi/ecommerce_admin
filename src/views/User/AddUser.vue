@@ -43,8 +43,9 @@
             {{ msg_min_length }}
           </div>
           <div
-                  v-for="(error, i) in errors.name" :key="i"
-                  class="invalid-feedback"
+            v-for="(error, i) in errors.name"
+            :key="i"
+            class="invalid-feedback"
           >
             {{ error }}
           </div>
@@ -75,8 +76,9 @@
             {{ msg_min_length }}
           </div>
           <div
-                  v-for="(error, i) in errors.username" :key="i"
-                  class="invalid-feedback"
+            v-for="(error, i) in errors.username"
+            :key="i"
+            class="invalid-feedback"
           >
             {{ error }}
           </div>
@@ -104,8 +106,9 @@
             {{ msg_email }}
           </div>
           <div
-                  v-for="(error, i) in errors.email" :key="i"
-                  class="invalid-feedback"
+            v-for="(error, i) in errors.email"
+            :key="i"
+            class="invalid-feedback"
           >
             {{ error }}
           </div>
@@ -128,8 +131,9 @@
             {{ msg_req }}
           </div>
           <div
-                  v-for="(error, i) in errors.phone" :key="i"
-                  class="invalid-feedback"
+            v-for="(error, i) in errors.phone"
+            :key="i"
+            class="invalid-feedback"
           >
             {{ error }}
           </div>
@@ -154,8 +158,9 @@
             {{ msg_req }}
           </div>
           <div
-                  v-for="(error, i) in errors.location" :key="i"
-                  class="invalid-feedback"
+            v-for="(error, i) in errors.location"
+            :key="i"
+            class="invalid-feedback"
           >
             {{ error }}
           </div>
@@ -180,8 +185,9 @@
             {{ msg_req }}
           </div>
           <div
-                  v-for="(error, i) in errors.password" :key="i"
-                  class="invalid-feedback"
+            v-for="(error, i) in errors.password"
+            :key="i"
+            class="invalid-feedback"
           >
             {{ error }}
           </div>
@@ -213,6 +219,27 @@
             class="invalid-feedback"
           >
             {{ msg_password_match }}
+          </div>
+        </div>
+         <div class="form-group">
+         <!--<label>اختر صلاحية المستخدم</label>-->
+           <div class="style-chooser">
+             <v-select
+                     dir="rtl"
+                     label="name"
+                     :filterable="false"
+                     :options="roles"
+                     v-model="newUser.role"
+                     placeholder="اختر صلاحية المستخدم"
+                     :reduce="name => name.id"
+             >
+             </v-select>
+           </div>
+          <div
+            v-if="isSubmitted && !$v.newUser.role.required"
+            class="invalid-feedback"
+          >
+            {{ msg_req }}
           </div>
         </div>
 
@@ -278,7 +305,8 @@
 
 <script>
 import { required, email, sameAs, minLength } from "vuelidate/lib/validators";
-import localVar from "../../LocalVar";
+import localVar, {ROLES_API} from "../../LocalVar";
+import {HTTP} from "../../http-common";
 export default {
   name: "AddUser",
   data: function() {
@@ -295,12 +323,14 @@ export default {
         password_confirmation: "",
         email: "",
         phone: "",
-        location: ""
+        location: "",
+        role: ""
         //company: "",
         //branch: ""
       },
       isSubmitted: false,
-      errors:{
+      roles:[],
+      errors: {
         email: [],
         phone: [],
         username: [],
@@ -308,7 +338,6 @@ export default {
         loaction: [],
         password: []
       }
-
     };
   },
   validations: {
@@ -337,79 +366,93 @@ export default {
       },
       location: {
         required
+      },
+      role: {
+        required
       }
       /* branch: {
         required
       }*/
     }
   },
+  async mounted() {
+    await this.getRoles();
+  },
   methods: {
     handleSubmit() {
-       this.$swal.fire({
-         title: 'هل تريد الاستمرار؟',
-         icon: 'question',
-         iconHtml: '؟',
-         confirmButtonText: 'نعم',
-         cancelButtonText: 'لا',
-         showCancelButton: true,
-         showCloseButton: true,
-         preConfirm: () => {
-           this.isSubmitted = true;
-           this.$v.$touch();
-           if (this.$v.$invalid) {
-             return;
-           }
+      this.$swal.fire({
+        title: "هل تريد الاستمرار؟",
+        icon: "question",
+        iconHtml: "؟",
+        confirmButtonText: "نعم",
+        cancelButtonText: "لا",
+        showCancelButton: true,
+        showCloseButton: true,
+        preConfirm: () => {
+          this.isSubmitted = true;
+          this.$v.$touch();
+          if (this.$v.$invalid) {
+            return;
+          }
 
-            this.addNewUser();
+          this.addNewUser();
+        }
+      });
+    },
+    getRoles(){
+      HTTP
+              .get( ROLES_API)
+              .then(res => {
+                console.log(res);
 
-
-         }
-            })
-
+                this.roles = res.data.data;
+              })
+              .catch(() => {
+                console.log("handle server error from here");
+              });
     },
     addNewUser() {
-      //console.log(this.newUser);
+      console.log(this.newUser);
       this.$axios
         .post(localVar.get_api_address() + "users/", this.newUser)
         .then(res => {
           //this.$router.push({ name: "Users" });
 
           this.$swal.fire({
-            icon: 'success',
-            title: 'تمت إضافة الموظف بنجاح!',
-            showConfirmButton: false,
-           // timer: 1500
-          })
+            icon: "success",
+            title: "تمت إضافة الموظف بنجاح!",
+            showConfirmButton: false
+            // timer: 1500
+          });
 
           console.log(res.data);
         })
-              .catch(error => {
-                if (error.response) {
-                  // The request was made and the server responded with a status code
-                  // that falls out of the range of 2xx
+        .catch(error => {
+          if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
 
-                  this.errors = error.response.data.errors;
-                  this.$swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: error.response.data.message,
-                  })
+            this.errors = error.response.data.errors;
+            this.$swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: error.response.data.message
+            });
 
-                  //console.log(error.response.status);
-                  //console.log(error.response.data.errors);
-                 // console.log(error.response.headers);
-                } else if (error.request) {
-                  // The request was made but no response was received
-                  // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                  // http.ClientRequest in node.js
-                  console.log(error.request);
-                } else {
-                  // Something happened in setting up the request that triggered an Error
-                  console.log('Error', error.message);
-                }
-                console.log(error.config);
-              })
-        ;
+            //console.log(error.response.status);
+            //console.log(error.response.data.errors);
+            // console.log(error.response.headers);
+          } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            console.log(error.request);
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log("Error", error.message);
+          }
+          console.log(error.config);
+        });
     }
     /* showBranches(i) {
       //this.getBranches(i);
@@ -432,3 +475,28 @@ export default {
   }
 };
 </script>
+<style scoped>
+  .d-center {
+    display: flex;
+    align-items: center;
+  }
+
+  .v-select .dropdown li {
+    border-bottom: 1px solid rgba(112, 128, 144, 0.1);
+  }
+
+  .v-select .dropdown li:last-child {
+    border-bottom: none;
+  }
+
+  .v-select .dropdown li a {
+    padding: 10px 20px;
+    width: 100%;
+    font-size: 1.25em;
+    color: #3c3c3c;
+  }
+
+  .v-select .dropdown-menu .active > a {
+    color: #fff;
+  }
+</style>

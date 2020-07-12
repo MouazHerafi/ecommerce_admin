@@ -12,7 +12,9 @@
         <i class="fa fa-plus block-icon" aria-hidden="true"></i>اضافة فئة جديد
       </h1>
 
-      <form class="custom-form user-profile-form d-flex flex-wrap">
+      <form
+              @submit.prevent="addNewCategory"
+              class="custom-form user-profile-form d-flex flex-wrap">
         <div class="form-group">
           <label>اسم الفئة</label>
           <input
@@ -22,24 +24,50 @@
             type="text"
           />
         </div>
-        <div class="form-group">
+        <!--<div class="form-group">
           <label>التوصيف</label>
           <textarea
             class="form-control"
             v-model="newCategory.description"
             title="cat-details"
           ></textarea>
-        </div>
+        </div>-->
         <div class="form-group">
-          <label>مستوى الفئة</label>
+          <!--<label>مستوى الفئة</label>
           <select id="level" class="form-control" v-model="newCategory.level">
             <option v-for="cat in levelsCategory" :value="cat.id" :key="cat.id">
               {{ cat.name }}
             </option>
-          </select>
+          </select>-->
+          <div class="style-chooser">
+            <v-select
+                    dir="rtl"
+                    label="name"
+                    :filterable="false"
+                    :options="categories.data"
+                    v-model="newCategory.parent_id"
+                    placeholder="اختر مستوى لهذه الفئة"
+                    :reduce="name => name.id"
+                    @search="onSearch"
+            >
+              <template slot="no-options">
+                ابحث عن الموظف المطلوب..
+              </template>
+              <template slot="user" slot-scope="user">
+                <div class="d-center">
+                  {{ user.username }}
+                </div>
+              </template>
+              <template slot="selected-user" slot-scope="user">
+                <div class="selected d-center">
+                  {{ user.username }}
+                </div>
+              </template>
+            </v-select>
+          </div>
         </div>
         <div class="form-group">
-          <button class="btn btn-primary" @click="addNewCategory()">
+          <button class="btn btn-primary">
             تأكيد
           </button>
         </div>
@@ -50,29 +78,53 @@
 
 <script>
 import localVar from "../../LocalVar";
+import {HTTP} from "../../http-common";
 
 export default {
   name: "AddCategory",
   data: function() {
     return {
+      categories: {
+        total: 0,
+        per_page: 2,
+        from: 1,
+        to: 0,
+        current_page: 1
+      },
       newCategory: {
         name: "",
-        description: "",
-        parent: ""
-      },
-      levelsCategory: [
-        {
-          id: 1,
-          name: "الالكترونيات"
-        },
-        {
-          id: 2,
-          name: "الموضة"
-        }
-      ]
+        //description: "",
+        parent_id: ""
+      }
     };
   },
   methods: {
+    onSearch(search, loading) {
+      if(search){this.search(loading, search, this);}
+    },
+    search(loading, search /*, vm*/) {
+      this.getAllCategories(escape(search));
+
+      /* fetch(
+              `https://api.github.com/search/repositories?q=${escape(search)}`
+      ).then(res => {
+        res.json().then(json => (vm.options = json.items));
+        loading(false);
+      });*/
+    },
+    getAllCategories(search) {
+      HTTP
+              .get("v1/categorySearch?name=" + search
+              )
+              .then(res => {
+                console.log(res);
+
+                this.categories = res.data;
+              })
+              .catch(() => {
+                console.log("handle server error from here");
+              });
+    },
     addNewCategory() {
       console.log(this.newCategory);
       this.$axios
@@ -88,3 +140,28 @@ export default {
   }
 };
 </script>
+<style scoped>
+  .d-center {
+    display: flex;
+    align-items: center;
+  }
+
+  .v-select .dropdown li {
+    border-bottom: 1px solid rgba(112, 128, 144, 0.1);
+  }
+
+  .v-select .dropdown li:last-child {
+    border-bottom: none;
+  }
+
+  .v-select .dropdown li a {
+    padding: 10px 20px;
+    width: 100%;
+    font-size: 1.25em;
+    color: #3c3c3c;
+  }
+
+  .v-select .dropdown-menu .active > a {
+    color: #fff;
+  }
+</style>

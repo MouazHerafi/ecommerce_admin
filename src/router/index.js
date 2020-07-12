@@ -16,11 +16,13 @@ import Company from "../views/Company/Company.vue";
 import Branches from "../views/Branch/Branches.vue";
 import AddBranch from "../views/Branch/AddBranch.vue";
 import Branch from "../views/Branch/Branch.vue";
-import Products from "../views/Products.vue";
-import Product from "../views/Product.vue";
+import Products from "../views/Product/Products.vue";
+import Product from "../views/Product/Product.vue";
 import Coupons from "../views/Coupon/Coupons.vue";
 import Coupon from "../views/Coupon/Coupon.vue";
 import AddCoupon from "../views/Coupon/AddCoupon.vue";
+import NewAttribute from "../views/NewAttribute";
+import ManageAttributes from "../views/Branch/ManageAttributes";
 
 Vue.use(VueRouter);
 
@@ -209,6 +211,36 @@ const routes = [
             component: Coupon
           }
         ]
+      },
+      {
+        path: "branches",
+        meta: {
+          label: "Branches"
+        },
+        component: {
+          render(c) {
+            return c("router-view");
+          }
+        },
+        children: [
+          {
+            path: ":branchID/manage-attribute",
+            meta: {
+              label: "Manage Attributes"
+            },
+            name: "ManageAttributes",
+            component: ManageAttributes,
+          },
+
+        ]
+      },
+      {
+        path: "new-attribute",
+        meta: {
+          label: "New Attribute"
+        },
+        name: "NewAttribute",
+        component: NewAttribute
       }
     ]
   },
@@ -234,7 +266,7 @@ const routes = [
       }
     ]
   },
-  { path: '*', component: Error404 }
+  { path: "*", component: Error404 }
 ];
 
 const router = new VueRouter({

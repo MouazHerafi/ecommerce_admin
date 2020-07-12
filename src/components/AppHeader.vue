@@ -96,6 +96,10 @@
               <router-link to="/coupons">
                 <li @click="close()"><a @click="close()"><i class="fa fa-shopping-cart"></i>الحسومات</a></li>
               </router-link>
+              <router-link to="/new-attribute">
+                <li @click="close()"><a @click="close()"><i class="fa fa-tags"></i>إضافة صفة جديدة</a></li>
+              </router-link>
+
 
             </ul>
         </div>

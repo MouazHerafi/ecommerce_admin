@@ -334,8 +334,8 @@ button, input, select, textarea{
 .custom-radio label::before{
     content: "";
     display: inline-block;
-    width: 10px;
-    height: 10px;
+    width: 15px;
+    height: 15px;
     margin-left: 15px;
     border-radius: 2px;
     background: #dedede;

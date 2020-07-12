@@ -2,7 +2,7 @@
     <div class="col-xl-3 col-sm-6 col-12">
         <div class="product">
             <div class="product-inner">
-                <img alt="alt" src="/images/product-01.jpg">
+                <img alt="alt" :src=[image]>
                 <div class="cart-btns">
                     <a @click="deleteProduct(id)" class="btn btn-danger prodelete-btn">حذف</a>
                     <a class="btn btn-danger proedit-btn" >حظر</a>
@@ -18,7 +18,7 @@
 
 <script>
 export default {
-    props: ["id","name","price"],
+    props: ["id","name","price","image"],
     name: "CardProduct",
     methods: {
         deleteProduct(id){

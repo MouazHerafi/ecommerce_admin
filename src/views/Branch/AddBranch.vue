@@ -13,7 +13,9 @@
         <i class="fa fa-plus block-icon" aria-hidden="true"></i>إضافة فرع جديد
       </h1>
 
-      <form class="custom-form user-profile-form d-flex flex-wrap">
+      <form
+              @submit.prevent="addNewBranch"
+              class="custom-form user-profile-form d-flex flex-wrap">
         <div class="form-group">
           <label>اسم الفرع</label>
           <input
@@ -32,7 +34,7 @@
             class="form-control"
           />
         </div>
-        <div class="form-group">
+        <!--<div class="form-group">
           <label>البريد الالكتروني</label>
           <input
             id="email"
@@ -52,13 +54,13 @@
             type="text"
             value=""
           />
-        </div>
+        </div>-->
 
         <div class="form-group">
           <div class="style-chooser">
             <v-select
               dir="rtl"
-              label="username"
+              label="email"
               :filterable="false"
               :options="users.data"
               v-model="newBranch.user_id"
@@ -84,7 +86,7 @@
         </div>
 
         <div class="form-group btn-submit">
-          <a class="btn btn-primary" @click="addNewBranch()">تأكيد</a>
+          <a class="btn btn-primary">تأكيد</a>
         </div>
       </form>
     </div>
@@ -92,7 +94,8 @@
 </template>
 
 <script>
-import localVar from "../../LocalVar";
+import {BRANCHES_API} from "../../LocalVar";
+import {HTTP} from "../../http-common";
 
 export default {
   name: "AddBranch",
@@ -108,8 +111,8 @@ export default {
       newBranch: {
         name: "",
         location: "",
-        email: "",
-        phone: "",
+        //email: "",
+        //phone: "",
         company_id: Number.parseInt(this.$route.params.id, 10),
         user_id: undefined
       }
@@ -118,13 +121,10 @@ export default {
 
   methods: {
     onSearch(search, loading) {
-      loading(true);
-      this.search(loading, search, this);
+      if(search){this.search(loading, search, this);}
     },
     search(loading, search /*, vm*/) {
-      console.log(search);
-      loading(false);
-      this.getAllUser();
+      this.getAllUser(escape(search));
 
       /* fetch(
               `https://api.github.com/search/repositories?q=${escape(search)}`
@@ -133,10 +133,9 @@ export default {
         loading(false);
       });*/
     },
-    getAllUser() {
-      this.$axios
-        .get(
-          localVar.get_api_address() + "users?page=" + this.users.current_page
+    getAllUser(search) {
+      HTTP
+        .get("v1/employeeSearchEmail?email=" + search
         )
         .then(res => {
           console.log(res);
@@ -149,20 +148,22 @@ export default {
     },
     addNewBranch() {
       console.log(this.newBranch);
-      this.$axios
-        .post(localVar.get_api_address() + "branches/", this.newBranch)
+      HTTP
+        .post(BRANCHES_API,this.newBranch)
         .then(res => {
+          console.log(res);
           //this.$router.push({ name: "Branches" });
           console.log(res.data);
         })
-        .catch(() => {
+        .catch(error => {
+          console.log(error);
           console.log("handle server error from here");
         });
     }
   }
 };
 </script>
-<style>
+<style scoped>
 .d-center {
   display: flex;
   align-items: center;

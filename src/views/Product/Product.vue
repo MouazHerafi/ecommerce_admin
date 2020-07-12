@@ -50,7 +50,7 @@
             </div>
             <div class="col-md-6 col-sm-12">
               <div class="product-info">
-                <h2>ماك بوك برو</h2>
+                <h2>{{clickedProduct.name}}</h2>
                 <p class="mb-0">الشركة المصنعة : ابل</p>
                 <p class="mb-0">فرع المزة</p>
                 <p class="product_price">$5528</p>
@@ -64,7 +64,39 @@
 </template>
 
 <script>
+import {HTTP} from "../../http-common";
+import { PRODUCTS_API } from "../../LocalVar";
+
 export default {
-  name: "Product"
+  name: "Product",
+  data: function() {
+    return {
+      clickedProduct: {
+        name: "",
+        price: "",
+        quantity: "",
+        status: "",
+        details: ""
+      },
+    };
+  },
+  async mounted() {
+    await this.getProduct();
+  },
+  methods: {
+    getProduct() {
+      console.log(this.$route.params.productID);
+      HTTP
+              .get( PRODUCTS_API +"/" + this.$route.params.productID)
+              .then(res => {
+                console.log(res);
+
+                this.clickedProduct = res.data.data;
+              })
+              .catch(() => {
+                console.log("handle server error from here");
+              });
+    },
+  }
 };
 </script>

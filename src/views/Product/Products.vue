@@ -20,15 +20,16 @@
 
           <div class="row">
             <card-product
-              v-for="(product, i) in products"
+              v-for="(product, i) in products.data"
               :key="i"
               :id="product.id"
               :name="product.name"
               :price="product.price"
+              :image="product.image.path"
             />
           </div>
-          <Pagination  :pagination="companies"
-                       @paginate="getAllCompany()"
+          <Pagination  :pagination="products"
+                       @paginate="getProducts()"
                        :offset="4">
           </Pagination>
 
@@ -39,9 +40,11 @@
 </template>
 
 <script>
-import Pagination from "../components/Pagination/Pagination.vue";
-import CardProduct from "../components/CardProduct.vue";
-import SearchField from "../components/SearchField.vue";
+import Pagination from "../../components/Pagination/Pagination.vue";
+import CardProduct from "../../components/CardProduct.vue";
+import SearchField from "../../components/SearchField.vue";
+import {HTTP} from "../../http-common";
+
 export default {
   name: "Products",
   components: {
@@ -63,7 +66,8 @@ export default {
     };
   },
   mounted() {
-    this.getProductsForBranch();
+    //this.getProductsForBranch();
+    this.getProducts();
   },
   methods: {
     /*getProductsForBranch(){
@@ -83,7 +87,21 @@ export default {
         },*/
 
     /* with pagination  */
+    getProducts() {
+      //this.isLoading = true;
+      HTTP.get("v1/branches/"+this.$route.params.branchID+"/products?page=" + this.products.current_page)
+              .then(res => {
+                console.log(res);
 
+                this.products = res.data;
+                //console.log("hhhhhh"+this.products.data[0].image.path);
+              })
+              /*.catch(error => {
+                console.log(error.response.data);
+                console.log("handle server error from here");
+              })*/
+             /* .finally(() => (this.isLoading = false))*/;
+    },
     getProductsForBranch() {
       console.log(this.$route.params.branchID);
       this.$axios
@@ -105,38 +123,6 @@ export default {
         })
         .catch(error => console.log(error));
     },
-    pageChangeHandle(value) {
-      switch (value) {
-        case "next":
-          this.currentPage += 1;
-          break;
-        case "previous":
-          this.currentPage -= 1;
-          break;
-        case "first":
-          this.currentPage = 1;
-          break;
-        case "last":
-          this.currentPage = this.pageCount;
-          break;
-        default:
-          this.currentPage = value;
-      }
-      this.$axios
-        .get(
-          `api/products?branch=${this.$route.params.branchID}&page=${this.currentPage}&pageSize=${this.$options.static.visibleItemsPerPageCount}`
-        )
-        .then(res => {
-          console.log(res);
-          if (res.data.error) {
-            alert(res.data.message);
-          } else {
-            //console.log(res.data);
-            this.products = res.data.products;
-          }
-        })
-        .catch(error => console.log(error));
-    }
   },
   computed: {
     filteredProducts() {

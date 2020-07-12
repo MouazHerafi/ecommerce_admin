@@ -11,10 +11,15 @@
       <h1><i class="fa fa-university block-icon" aria-hidden="true"></i>{{company.name}}</h1>
 
       <div class="table-op clearfix">
-        <span class="float-right">
+        <span v-if="notFoundBranches" class="float-right">
           <span class="input-group">
             <input title="search" type="text" required="required" />
             <button type="submit" class="btn light-btn">بحث</button>
+          </span>
+        </span>
+        <span v-if="!notFoundBranches" class="float-right">
+          <span class="input-group">
+            <div>لا يوجد أفرع لهذه الشركة</div>
           </span>
         </span>
         <router-link :to="{ name: 'AddBranch' }">
@@ -23,7 +28,7 @@
           </button>
         </router-link>
       </div>
-      <table class="table table-striped">
+      <table v-if="notFoundBranches" class="table table-striped">
         <thead>
           <tr>
             <th>الاسم</th>
@@ -31,6 +36,9 @@
             <th class="hidden-sm-down">الموظف</th>
             <th class="hidden-sm-down">الرصيد</th>
             <th>المنتجات</th>
+            <th>إدارة الصفات</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
 
@@ -45,6 +53,11 @@
             <td>
               <a @click="showProducts(branch.id)" class="btn btn-sm linkGo"
                 ><i class="material-icons">keyboard_arrow_left</i></a
+              >
+            </td>
+            <td>
+              <a @click="ManageAttributes(branch.id)" class="btn btn-sm linkGo"
+              ><i class="material-icons">keyboard_arrow_left</i></a
               >
             </td>
             <td>
@@ -70,6 +83,72 @@
               :offset="4"
       >
       </Pagination>
+
+      <!--<div id="myModal1" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+
+              <h4 class="modal-title">إدارة صفات المنتجات للفرع :</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <h3>قم بإضافة أو حذف صفات لهذا الفرع :</h3>
+
+                <ul
+                        id="tasks-list"
+                        class="text-right list-unstyled p-0 custom-checkbox"
+                >
+                  <li>
+                    <input type="checkbox" />
+                    <label>شحن بضائع القسم النسائي</label>
+                  </li>
+                  <li>
+                    <input type="checkbox" />
+                    <label>شحن بضائع القسم النسائي</label>
+                  </li>
+                  <li>
+                    <input type="checkbox" />
+                    <label>شحن بضائع القسم النسائي</label>
+                  </li>
+                  <li>
+                    <input type="checkbox" />
+                    <label>شحن بضائع القسم النسائي</label>
+                  </li>
+                  <li>
+                    <input type="checkbox" />
+                    <label>شحن بضائع القسم النسائي</label>
+                  </li>
+                  <li>
+                    <input type="checkbox" />
+                    <label>شحن بضائع القسم النسائي</label>
+                  </li>
+                  <li>
+                    <input type="checkbox" />
+                    <label>شحن بضائع القسم النسائي</label>
+                  </li>
+                  <li>
+                    <input type="checkbox" />
+                    <label>شحن بضائع القسم النسائي</label>
+                  </li>
+                  <li>
+                    <input type="checkbox" />
+                    <label>شحن بضائع القسم النسائي</label>
+                  </li>
+
+
+
+                </ul>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>-->
+
     </div>
   </div>
 </template>
@@ -97,16 +176,30 @@ export default {
         phone:""
 
       },
-      offset: 4
+      offset: 4,
+      notFoundBranches: false
     };
   },
   components: {
     Pagination
   },
   async mounted() {
+    await this.getCompany();
     await this.getAllBranch();
+
   },
   methods: {
+    getCompany() {
+      console.log(this.$route.params.id);
+      HTTP
+              .get(COMPANIES_API + "/" + this.$route.params.id)
+              .then(res => {
+                //console.log(res);
+                this.company = res.data.data;
+              }).catch(() => {
+        console.log("handle server error from here");
+      });
+    },
     getAllBranch() {
       HTTP
               .get(
@@ -116,12 +209,15 @@ export default {
               )
               .then(res => {
                 console.log(res);
+                if(res.data.data!=null){
+                  this.notFoundBranches = true;
+                  //this.company = res.data.data[0].company;
+                  this.branches = res.data;
+                }
 
-                this.company = res.data.data[0].company;
-                this.branches = res.data;
               })
               .catch(() => {
-                console.log("handle server error from here");
+                console.log("handle hhh server error from here");
               });
     },
     showBranch(branchID) {
@@ -129,6 +225,10 @@ export default {
     },
     showProducts(branchID) {
       this.$router.push({ name: "Products", params: { branchID: branchID } });
+      //this.$router.push({ path: `/companies/${companyID}/branches` }); // -> /user/123
+    },
+    ManageAttributes(branchID) {
+      this.$router.push({ name: "ManageAttributes", params: { branchID: branchID } });
       //this.$router.push({ path: `/companies/${companyID}/branches` }); // -> /user/123
     }
   }

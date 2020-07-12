@@ -3,10 +3,12 @@ export const USERS_API = URL_API + "users";
 export const LOGIN_API = "login";
 export const COMPANIES_API = URL_API + "companies";
 export const BRANCHES_API = URL_API + "branches";
-
+export const PRODUCTS_API = URL_API + "products";
+export const ROLES_API = URL_API + "roles";
+export const ATTRIBUTE_API = URL_API + "attributes";
 export default {
   get_api_address() {
-    return "http://10.65.1.110:8000/api/v1/";
+    return "http://10.65.1.109:8000/api/v1/";
   },
   get_msg_req() {
     return "هذا الحقل مطلوب";
