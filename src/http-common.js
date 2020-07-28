@@ -1,6 +1,6 @@
 import axios from "axios";
 import router from "./router";
-const IP = "http://10.65.1.109";
+const IP = "http://localhost";
 const PORT = "8000";
 const token = localStorage.getItem("token");
 // eslint-disable-next-line no-unused-vars
@@ -10,7 +10,7 @@ export const HTTP = axios.create({
   headers: {
     Authorization: token,
     //Content_Type: "application/json;charset=UTF-8"
-    //Content_Type: "application/x-www-form-urlencoded"
+    Content_Type: "application/x-www-form-urlencoded"
   }
 });
 
@@ -49,7 +49,7 @@ HTTP.interceptors.response.use(
         case 404:
           router.replace({
             path: "/pages",
-            query: { redirect: router.currentRoute.fullPath }
+            //query: { redirect: router.currentRoute.fullPath }
           });
           break;
         case 502:

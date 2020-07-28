@@ -23,9 +23,30 @@
             id="name"
             v-model="newCompany.name"
             class="form-control"
+            :class="{
+              'error-feild': isSubmitted && $v.newCompany.name.$error
+            }"
             type="text"
-            value=""
           />
+          <div
+            v-if="isSubmitted && !$v.newCompany.name.required"
+            class="invalid-feedback"
+          >
+            {{ msg_req }}
+          </div>
+          <div
+            v-if="isSubmitted && !$v.newCompany.name.minLength"
+            class="invalid-feedback"
+          >
+            {{ msg_min_length }}
+          </div>
+          <div
+            v-for="(error, i) in errors.name"
+            :key="i"
+            class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
         </div>
         <!--<div class="form-group">
           <label>وصف عن الشركة</label>
@@ -43,8 +64,23 @@
             v-model="newCompany.phone"
             class="form-control"
             type="text"
-            value=""
+            :class="{
+              'error-feild': isSubmitted && $v.newCompany.phone.$error
+            }"
           />
+          <div
+            v-if="isSubmitted && !$v.newCompany.phone.required"
+            class="invalid-feedback"
+          >
+            {{ msg_req }}
+          </div>
+          <div
+            v-for="(error, i) in errors.phone"
+            :key="i"
+            class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
         </div>
 
         <div class="form-group">
@@ -59,18 +95,37 @@
 
 <script>
 import { MESSAGE_ERROR, HTTP } from "../../http-common";
-import { COMPANIES_API } from "../../LocalVar";
+import localVar, { COMPANIES_API } from "../../LocalVar";
+import { minLength, required } from "vuelidate/lib/validators";
 export default {
   name: "AddCompany",
   data: function() {
     return {
+      msg_req: localVar.get_msg_req(),
+      msg_min_length: localVar.get_msg_min_length(4),
       newCompany: {
         name: "",
         // description: "",
         // email: "",
         phone: ""
+      },
+      isSubmitted: false,
+      errors: {
+        name: [],
+        phone: []
       }
     };
+  },
+  validations: {
+    newCompany: {
+      name: {
+        required,
+        minLength: minLength(4)
+      },
+      phone: {
+        required
+      }
+    }
   },
   methods: {
     handleSubmit() {
@@ -83,11 +138,11 @@ export default {
         showCancelButton: true,
         showCloseButton: true,
         preConfirm: () => {
-          /*this.isSubmitted = true;
+          this.isSubmitted = true;
           this.$v.$touch();
           if (this.$v.$invalid) {
             return;
-          }*/
+          }
 
           this.addNewCompany();
         }
@@ -97,16 +152,19 @@ export default {
       console.log(this.newCompany);
       HTTP.post(COMPANIES_API, this.newCompany)
         .then(res => {
-          //this.$router.push({ name: "Companies" });
           this.$swal.fire({
             icon: "success",
             title: "تمت إضافة الشركة بنجاح!",
-            showConfirmButton: false
+            cancelButtonText: "إغلاق",
+            showConfirmButton: false,
+            showCancelButton: true
             // timer: 1500
           });
+          this.$router.push({ name: "Companies" });
           console.log(res.data);
         })
-        .catch(() => {
+        .catch(error => {
+          this.errors = error.response.data.errors;
           this.$swal.fire({
             icon: "error",
             title: "Oops...",

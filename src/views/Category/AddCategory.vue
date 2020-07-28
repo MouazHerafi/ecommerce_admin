@@ -13,8 +13,9 @@
       </h1>
 
       <form
-              @submit.prevent="addNewCategory"
-              class="custom-form user-profile-form d-flex flex-wrap">
+        @submit.prevent="handleSubmit"
+        class="custom-form user-profile-form d-flex flex-wrap"
+      >
         <div class="form-group">
           <label>اسم الفئة</label>
           <input
@@ -22,7 +23,29 @@
             v-model="newCategory.name"
             title="cat-title"
             type="text"
+            :class="{
+              'error-feild': isSubmitted && $v.newCategory.name.$error
+            }"
           />
+          <div
+            v-if="isSubmitted && !$v.newCategory.name.required"
+            class="invalid-feedback"
+          >
+            {{ msg_req }}
+          </div>
+          <div
+            v-if="isSubmitted && !$v.newCategory.name.minLength"
+            class="invalid-feedback"
+          >
+            {{ msg_min_length }}
+          </div>
+          <div
+            v-for="(error, i) in errors.name"
+            :key="i"
+            class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
         </div>
         <!--<div class="form-group">
           <label>التوصيف</label>
@@ -33,37 +56,47 @@
           ></textarea>
         </div>-->
         <div class="form-group">
-          <!--<label>مستوى الفئة</label>
-          <select id="level" class="form-control" v-model="newCategory.level">
-            <option v-for="cat in levelsCategory" :value="cat.id" :key="cat.id">
-              {{ cat.name }}
-            </option>
-          </select>-->
           <div class="style-chooser">
             <v-select
-                    dir="rtl"
-                    label="name"
-                    :filterable="false"
-                    :options="categories.data"
-                    v-model="newCategory.parent_id"
-                    placeholder="اختر مستوى لهذه الفئة"
-                    :reduce="name => name.id"
-                    @search="onSearch"
+              dir="rtl"
+              label="name"
+              :filterable="false"
+              :options="categories.data"
+              v-model="newCategory.parent_id"
+              placeholder="اختر مستوى لهذه الفئة"
+              :reduce="name => name.id"
+              @search="onSearch"
+              :class="{
+                'error-feild': isSubmitted && $v.newCategory.parent_id.$error
+              }"
             >
               <template slot="no-options">
-                ابحث عن الموظف المطلوب..
+                ابحث عن الفئة المطلوبة..
               </template>
-              <template slot="user" slot-scope="user">
+              <template slot="category" slot-scope="category">
                 <div class="d-center">
-                  {{ user.username }}
+                  {{ category.name }}
                 </div>
               </template>
-              <template slot="selected-user" slot-scope="user">
+              <template slot="selected-category" slot-scope="category">
                 <div class="selected d-center">
-                  {{ user.username }}
+                  {{ category.name }}
                 </div>
               </template>
             </v-select>
+          </div>
+          <div
+            v-if="isSubmitted && !$v.newCategory.parent_id.required"
+            class="invalid-feedback"
+          >
+            {{ msg_req }}
+          </div>
+          <div
+            v-for="(error, i) in errors.parent_id"
+            :key="i"
+            class="invalid-feedback"
+          >
+            {{ error }}
           </div>
         </div>
         <div class="form-group">
@@ -77,8 +110,9 @@
 </template>
 
 <script>
-import localVar from "../../LocalVar";
-import {HTTP} from "../../http-common";
+import localVar, { CATEGORIES_API } from "../../LocalVar";
+import { HTTP } from "../../http-common";
+import { minLength, required } from "vuelidate/lib/validators";
 
 export default {
   name: "AddCategory",
@@ -95,42 +129,80 @@ export default {
         name: "",
         //description: "",
         parent_id: ""
-      }
+      },
+      isSubmitted: false,
+      errors: {
+        name: [],
+        parent_id: []
+      },
+      msg_req: localVar.get_msg_req(),
+      msg_min_length: localVar.get_msg_min_length(4)
     };
   },
+  validations: {
+    newCategory: {
+      name: {
+        required,
+        minLength: minLength(4)
+      },
+      parent_id: {
+        required
+      }
+    }
+  },
   methods: {
+    handleSubmit() {
+      this.$swal.fire({
+        title: "هل تريد الاستمرار؟",
+        icon: "question",
+        iconHtml: "؟",
+        confirmButtonText: "نعم",
+        cancelButtonText: "لا",
+        showCancelButton: true,
+        showCloseButton: true,
+        preConfirm: () => {
+          this.isSubmitted = true;
+          this.$v.$touch();
+          if (this.$v.$invalid) {
+            return;
+          }
+
+          this.addNewCategory();
+        }
+      });
+    },
     onSearch(search, loading) {
-      if(search){this.search(loading, search, this);}
+      if (search) {
+        this.search(loading, search, this);
+      }
     },
     search(loading, search /*, vm*/) {
       this.getAllCategories(escape(search));
-
-      /* fetch(
-              `https://api.github.com/search/repositories?q=${escape(search)}`
-      ).then(res => {
-        res.json().then(json => (vm.options = json.items));
-        loading(false);
-      });*/
     },
     getAllCategories(search) {
-      HTTP
-              .get("v1/categorySearch?name=" + search
-              )
-              .then(res => {
-                console.log(res);
+      HTTP.get("v1/categorySearch?name=" + search)
+        .then(res => {
+          console.log(res);
 
-                this.categories = res.data;
-              })
-              .catch(() => {
-                console.log("handle server error from here");
-              });
+          this.categories = res.data;
+        })
+        .catch(() => {
+          console.log("handle server error from here");
+        });
     },
     addNewCategory() {
       console.log(this.newCategory);
-      this.$axios
-        .post(localVar.get_api_address() + "categories/", this.newCategory)
+      HTTP.post(CATEGORIES_API, this.newCategory)
         .then(res => {
-          //this.$router.push({ name: "Categories" });
+          this.$swal.fire({
+            icon: "success",
+            title: "تمت إضافة الفئة بنجاح!",
+            cancelButtonText: "إغلاق",
+            showConfirmButton: false,
+            showCancelButton: true
+            // timer: 1500
+          });
+          this.$router.push({ name: "Categories" });
           console.log(res.data);
         })
         .catch(() => {
@@ -141,27 +213,27 @@ export default {
 };
 </script>
 <style scoped>
-  .d-center {
-    display: flex;
-    align-items: center;
-  }
+.d-center {
+  display: flex;
+  align-items: center;
+}
 
-  .v-select .dropdown li {
-    border-bottom: 1px solid rgba(112, 128, 144, 0.1);
-  }
+.v-select .dropdown li {
+  border-bottom: 1px solid rgba(112, 128, 144, 0.1);
+}
 
-  .v-select .dropdown li:last-child {
-    border-bottom: none;
-  }
+.v-select .dropdown li:last-child {
+  border-bottom: none;
+}
 
-  .v-select .dropdown li a {
-    padding: 10px 20px;
-    width: 100%;
-    font-size: 1.25em;
-    color: #3c3c3c;
-  }
+.v-select .dropdown li a {
+  padding: 10px 20px;
+  width: 100%;
+  font-size: 1.25em;
+  color: #3c3c3c;
+}
 
-  .v-select .dropdown-menu .active > a {
-    color: #fff;
-  }
+.v-select .dropdown-menu .active > a {
+  color: #fff;
+}
 </style>

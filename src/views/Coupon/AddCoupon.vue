@@ -13,7 +13,10 @@
         <i class="fa fa-plus block-icon" aria-hidden="true"></i>إضافة حسم جديد
       </h1>
 
-      <form class="custom-form user-profile-form d-flex flex-wrap">
+      <form
+        @submit.prevent="handleSubmit"
+        class="custom-form user-profile-form d-flex flex-wrap"
+      >
         <div class="form-group">
           <label>كود الحسم</label>
           <input
@@ -21,8 +24,23 @@
             v-model="newCoupon.code"
             class="form-control"
             type="text"
-            value=""
+            :class="{
+              'error-feild': isSubmitted && $v.newCoupon.code.$error
+            }"
           />
+          <div
+            v-if="isSubmitted && !$v.newCoupon.code.minLength"
+            class="invalid-feedback"
+          >
+            {{ msg_min_length }}
+          </div>
+          <div
+            v-for="(error, i) in errors.code"
+            :key="i"
+            class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
         </div>
         <div class="form-group">
           <label>قيمة الحسم</label>
@@ -31,14 +49,29 @@
             v-model="newCoupon.discountRate"
             class="form-control"
             type="text"
-            value=""
+            :class="{
+              'error-feild': isSubmitted && $v.newCoupon.discountRate.$error
+            }"
           />
+          <div
+            v-if="isSubmitted && !$v.newCoupon.discountRate.required"
+            class="invalid-feedback"
+          >
+            {{ msg_req }}
+          </div>
+          <div
+            v-for="(error, i) in errors.discountRate"
+            :key="i"
+            class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
         </div>
 
-        <div class="form-group btn-submit">
-          <a class="btn btn-primary" @click="addNewCoupon()">
+        <div class="form-group">
+          <button class="btn btn-primary">
             تأكيد
-          </a>
+          </button>
         </div>
       </form>
     </div>
@@ -46,7 +79,9 @@
 </template>
 
 <script>
-import localVar from "../../LocalVar";
+import localVar, { COUPON_API } from "../../LocalVar";
+import { minLength, required } from "vuelidate/lib/validators";
+import { HTTP, MESSAGE_ERROR } from "../../http-common";
 export default {
   name: "AddCoupon",
   data: function() {
@@ -54,20 +89,69 @@ export default {
       newCoupon: {
         code: "",
         discountRate: ""
-      }
+      },
+      isSubmitted: false,
+      errors: {
+        code: [],
+        discountRate: []
+      },
+      msg_req: localVar.get_msg_req(),
+      msg_min_length: localVar.get_msg_min_length(6)
     };
   },
+  validations: {
+    newCoupon: {
+      code: {
+        minLength: minLength(6)
+      },
+      discountRate: {
+        required
+      }
+    }
+  },
   methods: {
+    handleSubmit() {
+      this.$swal.fire({
+        title: "هل تريد الاستمرار؟",
+        icon: "question",
+        iconHtml: "؟",
+        confirmButtonText: "نعم",
+        cancelButtonText: "لا",
+        showCancelButton: true,
+        showCloseButton: true,
+        preConfirm: () => {
+          this.isSubmitted = true;
+          this.$v.$touch();
+          if (this.$v.$invalid) {
+            return;
+          }
+
+          this.addNewCoupon();
+        }
+      });
+    },
     addNewCoupon() {
       console.log(this.newCoupon);
-      this.$axios
-        .post(localVar.get_api_address() + "coupons/", this.newCoupon)
+      HTTP.post(COUPON_API, this.newCoupon)
         .then(res => {
-          //this.$router.push({ name: "Coupons" });
+          this.$swal.fire({
+            icon: "success",
+            title: "تمت إضافة الحسم بنجاح!",
+            cancelButtonText: "إغلاق",
+            showConfirmButton: false,
+            showCancelButton: true
+            // timer: 1500
+          });
           console.log(res.data);
+          this.$router.push({ name: "Coupons" });
         })
-        .catch(() => {
-          console.log("handle server error from here");
+        .catch(error => {
+          this.errors = error.response.data.errors;
+          this.$swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: MESSAGE_ERROR
+          });
         });
     }
   }

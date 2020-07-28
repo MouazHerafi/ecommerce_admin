@@ -28,11 +28,12 @@
               :image="product.image.path"
             />
           </div>
-          <Pagination  :pagination="products"
-                       @paginate="getProducts()"
-                       :offset="4">
+          <Pagination
+            :pagination="products"
+            @paginate="getProducts()"
+            :offset="4"
+          >
           </Pagination>
-
         </div>
       </div>
     </div>
@@ -43,7 +44,7 @@
 import Pagination from "../../components/Pagination/Pagination.vue";
 import CardProduct from "../../components/CardProduct.vue";
 import SearchField from "../../components/SearchField.vue";
-import {HTTP} from "../../http-common";
+import { HTTP } from "../../http-common";
 
 export default {
   name: "Products",
@@ -70,44 +71,30 @@ export default {
     this.getProducts();
   },
   methods: {
-    /*getProductsForBranch(){
-            console.log(this.$route.params.branchID);
-                this.$axios.get('api/products?branch='+this.$route.params.branchID)
-                .then(res=>{
-                    console.log(res);
-                    if(res.data.error){
-                        alert(res.data.message);
-                    }else{
-                        //console.log(res.data);
-                this.products = res.data;
-                        
-                    }
-                    
-                });
-        },*/
-
     /* with pagination  */
     getProducts() {
       //this.isLoading = true;
-      HTTP.get("v1/branches/"+this.$route.params.branchID+"/products?page=" + this.products.current_page)
-              .then(res => {
-                console.log(res);
+      HTTP.get(
+        "v1/branches/" +
+          this.$route.params.branchID +
+          "/products?page=" +
+          this.products.current_page
+      ).then(res => {
+        console.log(res);
 
-                this.products = res.data;
-                //console.log("hhhhhh"+this.products.data[0].image.path);
-              })
-              /*.catch(error => {
+        this.products = res.data;
+        //console.log("hhhhhh"+this.products.data[0].image.path);
+      });
+      /*.catch(error => {
                 console.log(error.response.data);
                 console.log("handle server error from here");
               })*/
-             /* .finally(() => (this.isLoading = false))*/;
+      /* .finally(() => (this.isLoading = false))*/
     },
     getProductsForBranch() {
       console.log(this.$route.params.branchID);
       this.$axios
-        .get(
-          `api/products?branch=${this.$route.params.branchID}&page=1`
-        )
+        .get(`api/products?branch=${this.$route.params.branchID}&page=1`)
         .then(res => {
           console.log(res);
           if (res.data.error) {
@@ -122,7 +109,7 @@ export default {
           }
         })
         .catch(error => console.log(error));
-    },
+    }
   },
   computed: {
     filteredProducts() {

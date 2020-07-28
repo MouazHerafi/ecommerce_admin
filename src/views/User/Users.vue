@@ -109,7 +109,7 @@ export default {
   methods: {
     getAllUser() {
       this.isLoading = true;
-      HTTP.get(USERS_API + "?page=" + this.users.current_page)
+      HTTP.get(USERS_API + "?type=employee&page=" + this.users.current_page)
         .then(res => {
           console.log(res);
 
@@ -135,7 +135,7 @@ export default {
     },
 
     rowClicked(userID) {
-      this.$router.push({ name: "User", params: { id: userID }});
+      this.$router.push({ name: "User", params: { id: userID } });
     }
   }
 };

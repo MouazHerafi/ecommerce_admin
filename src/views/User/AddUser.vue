@@ -221,20 +221,20 @@
             {{ msg_password_match }}
           </div>
         </div>
-         <div class="form-group">
-         <!--<label>اختر صلاحية المستخدم</label>-->
-           <div class="style-chooser">
-             <v-select
-                     dir="rtl"
-                     label="name"
-                     :filterable="false"
-                     :options="roles"
-                     v-model="newUser.role"
-                     placeholder="اختر صلاحية المستخدم"
-                     :reduce="name => name.id"
-             >
-             </v-select>
-           </div>
+        <div class="form-group">
+          <!--<label>اختر صلاحية المستخدم</label>-->
+          <div class="style-chooser">
+            <v-select
+              dir="rtl"
+              label="name"
+              :filterable="false"
+              :options="roles"
+              v-model="newUser.role"
+              placeholder="اختر صلاحية المستخدم"
+              :reduce="name => name.id"
+            >
+            </v-select>
+          </div>
           <div
             v-if="isSubmitted && !$v.newUser.role.required"
             class="invalid-feedback"
@@ -305,13 +305,12 @@
 
 <script>
 import { required, email, sameAs, minLength } from "vuelidate/lib/validators";
-import localVar, {ROLES_API} from "../../LocalVar";
-import {HTTP} from "../../http-common";
+import localVar, { ROLES_API } from "../../LocalVar";
+import { HTTP, MESSAGE_ERROR } from "../../http-common";
 export default {
   name: "AddUser",
   data: function() {
     return {
-      isDisabled: true,
       msg_req: localVar.get_msg_req(),
       msg_email: localVar.get_msg_email(),
       msg_password_match: localVar.get_msg_password_match(),
@@ -325,11 +324,9 @@ export default {
         phone: "",
         location: "",
         role: ""
-        //company: "",
-        //branch: ""
       },
       isSubmitted: false,
-      roles:[],
+      roles: [],
       errors: {
         email: [],
         phone: [],
@@ -370,9 +367,6 @@ export default {
       role: {
         required
       }
-      /* branch: {
-        required
-      }*/
     }
   },
   async mounted() {
@@ -399,17 +393,16 @@ export default {
         }
       });
     },
-    getRoles(){
-      HTTP
-              .get( ROLES_API)
-              .then(res => {
-                console.log(res);
+    getRoles() {
+      HTTP.get(ROLES_API)
+        .then(res => {
+          console.log(res);
 
-                this.roles = res.data.data;
-              })
-              .catch(() => {
-                console.log("handle server error from here");
-              });
+          this.roles = res.data.data;
+        })
+        .catch(() => {
+          console.log("handle server error from here");
+        });
     },
     addNewUser() {
       console.log(this.newUser);
@@ -428,30 +421,12 @@ export default {
           console.log(res.data);
         })
         .catch(error => {
-          if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-
-            this.errors = error.response.data.errors;
-            this.$swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: error.response.data.message
-            });
-
-            //console.log(error.response.status);
-            //console.log(error.response.data.errors);
-            // console.log(error.response.headers);
-          } else if (error.request) {
-            // The request was made but no response was received
-            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-            // http.ClientRequest in node.js
-            console.log(error.request);
-          } else {
-            // Something happened in setting up the request that triggered an Error
-            console.log("Error", error.message);
-          }
-          console.log(error.config);
+          this.errors = error.response.data.errors;
+          this.$swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: MESSAGE_ERROR
+          });
         });
     }
     /* showBranches(i) {
@@ -476,27 +451,27 @@ export default {
 };
 </script>
 <style scoped>
-  .d-center {
-    display: flex;
-    align-items: center;
-  }
+.d-center {
+  display: flex;
+  align-items: center;
+}
 
-  .v-select .dropdown li {
-    border-bottom: 1px solid rgba(112, 128, 144, 0.1);
-  }
+.v-select .dropdown li {
+  border-bottom: 1px solid rgba(112, 128, 144, 0.1);
+}
 
-  .v-select .dropdown li:last-child {
-    border-bottom: none;
-  }
+.v-select .dropdown li:last-child {
+  border-bottom: none;
+}
 
-  .v-select .dropdown li a {
-    padding: 10px 20px;
-    width: 100%;
-    font-size: 1.25em;
-    color: #3c3c3c;
-  }
+.v-select .dropdown li a {
+  padding: 10px 20px;
+  width: 100%;
+  font-size: 1.25em;
+  color: #3c3c3c;
+}
 
-  .v-select .dropdown-menu .active > a {
-    color: #fff;
-  }
+.v-select .dropdown-menu .active > a {
+  color: #fff;
+}
 </style>

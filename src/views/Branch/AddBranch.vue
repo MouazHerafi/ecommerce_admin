@@ -14,8 +14,9 @@
       </h1>
 
       <form
-              @submit.prevent="addNewBranch"
-              class="custom-form user-profile-form d-flex flex-wrap">
+        @submit.prevent="handleSubmit"
+        class="custom-form user-profile-form d-flex flex-wrap"
+      >
         <div class="form-group">
           <label>اسم الفرع</label>
           <input
@@ -23,8 +24,29 @@
             v-model="newBranch.name"
             class="form-control"
             type="text"
-            value=""
+            :class="{
+              'error-feild': isSubmitted && $v.newBranch.name.$error
+            }"
           />
+          <div
+            v-if="isSubmitted && !$v.newBranch.name.required"
+            class="invalid-feedback"
+          >
+            {{ msg_req }}
+          </div>
+          <div
+            v-if="isSubmitted && !$v.newBranch.name.minLength"
+            class="invalid-feedback"
+          >
+            {{ msg_min_length }}
+          </div>
+          <div
+            v-for="(error, i) in errors.name"
+            :key="i"
+            class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
         </div>
         <div class="form-group">
           <label>عنوان الفرع</label>
@@ -32,7 +54,29 @@
             id="location"
             v-model="newBranch.location"
             class="form-control"
+            :class="{
+              'error-feild': isSubmitted && $v.newBranch.location.$error
+            }"
           />
+          <div
+            v-if="isSubmitted && !$v.newBranch.location.required"
+            class="invalid-feedback"
+          >
+            {{ msg_req }}
+          </div>
+          <div
+            v-if="isSubmitted && !$v.newBranch.location.minLength"
+            class="invalid-feedback"
+          >
+            {{ msg_min_length }}
+          </div>
+          <div
+            v-for="(error, i) in errors.location"
+            :key="i"
+            class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
         </div>
         <!--<div class="form-group">
           <label>البريد الالكتروني</label>
@@ -67,6 +111,9 @@
               placeholder="اختر موظف لهذا الفرع"
               :reduce="username => username.id"
               @search="onSearch"
+              :class="{
+                'error-feild': isSubmitted && $v.newBranch.user_id.$error
+              }"
             >
               <template slot="no-options">
                 ابحث عن الموظف المطلوب..
@@ -83,10 +130,25 @@
               </template>
             </v-select>
           </div>
+          <div
+            v-if="isSubmitted && !$v.newBranch.user_id.required"
+            class="invalid-feedback"
+          >
+            {{ msg_req }}
+          </div>
+          <div
+            v-for="(error, i) in errors.user_id"
+            :key="i"
+            class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
         </div>
 
-        <div class="form-group btn-submit">
-          <a class="btn btn-primary">تأكيد</a>
+        <div class="form-group">
+          <button class="btn btn-primary">
+            تأكيد
+          </button>
         </div>
       </form>
     </div>
@@ -94,8 +156,9 @@
 </template>
 
 <script>
-import {BRANCHES_API} from "../../LocalVar";
-import {HTTP} from "../../http-common";
+import localVar, { BRANCHES_API } from "../../LocalVar";
+import { HTTP } from "../../http-common";
+import { minLength, required } from "vuelidate/lib/validators";
 
 export default {
   name: "AddBranch",
@@ -115,28 +178,62 @@ export default {
         //phone: "",
         company_id: Number.parseInt(this.$route.params.id, 10),
         user_id: undefined
-      }
+      },
+      isSubmitted: false,
+      errors: {
+        name: [],
+        location: [],
+        user_id: []
+      },
+      msg_req: localVar.get_msg_req(),
+      msg_min_length: localVar.get_msg_min_length(4)
     };
   },
-
+  validations: {
+    newBranch: {
+      name: {
+        required,
+        minLength: minLength(4)
+      },
+      location: {
+        required
+      },
+      user_id: {
+        required
+      }
+    }
+  },
   methods: {
+    handleSubmit() {
+      this.$swal.fire({
+        title: "هل تريد الاستمرار؟",
+        icon: "question",
+        iconHtml: "؟",
+        confirmButtonText: "نعم",
+        cancelButtonText: "لا",
+        showCancelButton: true,
+        showCloseButton: true,
+        preConfirm: () => {
+          this.isSubmitted = true;
+          this.$v.$touch();
+          if (this.$v.$invalid) {
+            return;
+          }
+
+          this.addNewBranch();
+        }
+      });
+    },
     onSearch(search, loading) {
-      if(search){this.search(loading, search, this);}
+      if (search) {
+        this.search(loading, search, this);
+      }
     },
     search(loading, search /*, vm*/) {
       this.getAllUser(escape(search));
-
-      /* fetch(
-              `https://api.github.com/search/repositories?q=${escape(search)}`
-      ).then(res => {
-        res.json().then(json => (vm.options = json.items));
-        loading(false);
-      });*/
     },
     getAllUser(search) {
-      HTTP
-        .get("v1/employeeSearchEmail?email=" + search
-        )
+      HTTP.get("v1/employeeSearchEmail?email=" + search)
         .then(res => {
           console.log(res);
 
@@ -148,12 +245,18 @@ export default {
     },
     addNewBranch() {
       console.log(this.newBranch);
-      HTTP
-        .post(BRANCHES_API,this.newBranch)
+      HTTP.post(BRANCHES_API, this.newBranch)
         .then(res => {
+          this.$swal.fire({
+            icon: "success",
+            title: "تمت إضافة الفرع بنجاح!",
+            cancelButtonText: "إغلاق",
+            showConfirmButton: false,
+            showCancelButton: true
+            // timer: 1500
+          });
           console.log(res);
-          //this.$router.push({ name: "Branches" });
-          console.log(res.data);
+          this.$router.push({ name: "Branches" });
         })
         .catch(error => {
           console.log(error);

@@ -84,7 +84,7 @@
                 <router-link to="/users">
               <li @click="close()"><a @click="close()"><i class="fa fa-users"></i>الموظفين</a></li>
             </router-link>
-              <router-link to="/users">
+              <router-link to="/customers">
                 <li @click="close()"><a @click="close()"><i class="fa fa-users"></i>الزبائن</a></li>
               </router-link>
               <router-link to="/">

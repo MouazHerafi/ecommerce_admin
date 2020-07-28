@@ -23,6 +23,7 @@ import Coupon from "../views/Coupon/Coupon.vue";
 import AddCoupon from "../views/Coupon/AddCoupon.vue";
 import NewAttribute from "../views/NewAttribute";
 import ManageAttributes from "../views/Branch/ManageAttributes";
+import Customers from "../views/Customer/Customers";
 
 Vue.use(VueRouter);
 
@@ -70,6 +71,24 @@ const routes = [
             name: "User",
             component: User,
             props: true
+          }
+        ]
+      },
+      {
+        path: "customers",
+        meta: {
+          label: "Customers"
+        },
+        component: {
+          render(c) {
+            return c("router-view");
+          }
+        },
+        children: [
+          {
+            path: "",
+            name: "Customers",
+            component: Customers
           }
         ]
       },
