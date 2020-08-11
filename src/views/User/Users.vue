@@ -14,7 +14,7 @@
       </h1>
 
       <div class="table-op clearfix">
-        <span class="float-right">
+        <span v-if="!showLoader" class="float-right">
           <span class="input-group">
             <input title="search" type="text" required="required" />
             <button type="submit" class="btn light-btn">بحث</button>
@@ -27,11 +27,11 @@
         </router-link>
       </div>
       <loading
-        :active.sync="isLoading"
+        :active.sync="showLoader"
         :is-full-page="false"
         color="#ef3e58"
       ></loading>
-      <table class="table table-striped">
+      <table v-if="!showLoader" class="table table-striped">
         <thead>
           <tr>
             <th>الاسم</th>
@@ -73,7 +73,7 @@
           </tr>
         </tbody>
       </table>
-      <Pagination :pagination="users" @paginate="getAllUser()" :offset="4">
+      <Pagination v-if="!showLoader" :pagination="users" @paginate="getAllUser()" :offset="4">
       </Pagination>
     </div>
   </div>
@@ -84,17 +84,16 @@
 import { HTTP } from "../../http-common";
 import { USERS_API } from "../../LocalVar";
 import Pagination from "../../components/Pagination/Pagination.vue";
-
 export default {
   data: function() {
     return {
-      users: {
+     /* users: {
         total: 0,
         per_page: 2,
         from: 1,
         to: 0,
         current_page: 1
-      },
+      },*/
       offset: 4,
       isLoading: false
     };
@@ -106,8 +105,19 @@ export default {
   async mounted() {
     await this.getAllUser();
   },
+  computed: {
+    users () {
+      return this.$store.getters.allUsers;
+    },
+    showLoader() {
+      return this.$store.getters.showLoader;
+    }
+  },
   methods: {
     getAllUser() {
+      this.$store.dispatch('allEmployees',this.users.current_page);
+    },
+   /* getAllUser() {
       this.isLoading = true;
       HTTP.get(USERS_API + "?type=employee&page=" + this.users.current_page)
         .then(res => {
@@ -119,19 +129,37 @@ export default {
           console.log(error.response.data);
           console.log("handle server error from here");
         })*/
-        .finally(() => (this.isLoading = false));
-    },
+      //  .finally(() => (this.isLoading = false));
+    //},*/
     deleteUser(userID) {
-      this.$axios
-        .delete(USERS_API + userID)
-        .then(res => {
-          console.log(res);
+      this.$swal.fire({
+        title: 'هل أنت متأكد؟',
+        text: "سيتم حذف هذا الموظف!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        cancelButtonText: 'لا',
+        confirmButtonText: 'نعم, أريد حذفه'
+      }).then((result) => {
+        if (result.value) {
+          HTTP
+                  .delete(USERS_API+ "/" + userID)
+                  .then(res => {
+                    console.log(res);
+                    this.$swal.fire({
+                              icon: "success",
+                              title:'تم حذف الموظف بنجاح!'
+                            }
+                    )
+                    this.getAllUser();
+                  })
+                  .catch(() => {
+                    console.log("handle server error from here");
+                  });
+        }
+      })
 
-          //this.$router.push({ name: "Users" });
-        })
-        .catch(() => {
-          console.log("handle server error from here");
-        });
     },
 
     rowClicked(userID) {

@@ -8,14 +8,30 @@ import { companiesState } from "./Companies/state";
 import { companyGetters } from "./Companies/getters";
 import { companyMutations } from "./Companies/mutations";
 import { companyActions } from "./Companies/actions";
+import {branchesState} from "./Branches/state";
+import {branchGetters} from "./Branches/getters";
+import {branchMutations} from "./Branches/mutations";
+import {branchActions} from "./Branches/actions";
+import {attributesState} from "./ManageAttributes/state";
+import {attributeGetters} from "./ManageAttributes/getters";
+import {attributeMutations} from "./ManageAttributes/mutations";
+import {attributeActions} from "./ManageAttributes/actions";
+import {categoriesState} from "./Categories/state";
+import {categoryGetters} from "./Categories/getters";
+import {categoryMutations} from "./Categories/mutations";
+import {categoryActions} from "./Categories/actions";
+import {couponsState} from "./Coupons/state";
+import {couponGetters} from "./Coupons/getters";
+import {couponMutations} from "./Coupons/mutations";
+import {couponActions} from "./Coupons/actions";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: Object.assign({}, usersState, companiesState),
+  state: Object.assign({}, usersState, companiesState , branchesState , attributesState , categoriesState , couponsState),
   // GETTERS
-  getters: Object.assign({}, userGetters, companyGetters),
-  mutations: Object.assign({}, userMutations, companyMutations),
-  actions: Object.assign({}, userActions, companyActions),
+  getters: Object.assign({}, userGetters, companyGetters , branchGetters , attributeGetters , categoryGetters , couponGetters),
+  mutations: Object.assign({}, userMutations, companyMutations , branchMutations , attributeMutations , categoryMutations , couponMutations),
+  actions: Object.assign({}, userActions, companyActions , branchActions , attributeActions , categoryActions , couponActions),
   modules: {}
 });

@@ -1,6 +1,6 @@
-export const companiesState = {
+export const couponsState = {
     showLoader: false,
-    companies: {
+    coupons: {
         total: 0,
         per_page: 2,
         from: 1,

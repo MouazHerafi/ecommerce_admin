@@ -180,10 +180,8 @@ export default {
       this.getAllCategories(escape(search));
     },
     getAllCategories(search) {
-      HTTP.get("v1/categorySearch?name=" + search)
+      HTTP.get("categorySearch?name=" + search)
         .then(res => {
-          console.log(res);
-
           this.categories = res.data;
         })
         .catch(() => {
@@ -191,16 +189,11 @@ export default {
         });
     },
     addNewCategory() {
-      console.log(this.newCategory);
       HTTP.post(CATEGORIES_API, this.newCategory)
         .then(res => {
           this.$swal.fire({
             icon: "success",
             title: "تمت إضافة الفئة بنجاح!",
-            cancelButtonText: "إغلاق",
-            showConfirmButton: false,
-            showCancelButton: true
-            // timer: 1500
           });
           this.$router.push({ name: "Categories" });
           console.log(res.data);

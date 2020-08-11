@@ -14,17 +14,17 @@
       </h1>
 
       <div class="table-op clearfix">
-        <span v-if="notFoundBranches && !isLoading" class="float-right">
+        <span v-if="!isLoading" class="float-right">
           <span class="input-group">
             <input title="search" type="text" required="required" />
             <button type="submit" class="btn light-btn">بحث</button>
           </span>
         </span>
-        <span v-if="!notFoundBranches" class="float-right">
+       <!-- <span v-if="!notFoundBranches" class="float-right">
           <span class="input-group">
             <div>لا يوجد أفرع لهذه الشركة</div>
           </span>
-        </span>
+        </span>-->
         <router-link :to="{ name: 'AddBranch' }">
           <button class="btn btn-primary mr-3 float-left">
             إضافة فرع جديد
@@ -90,7 +90,7 @@
         <rect x="782" y="56" rx="3" ry="3" width="72" height="33" />
         <rect x="933" y="54" rx="3" ry="3" width="24" height="33" />
       </ContentLoader>
-      <table v-if="notFoundBranches && !isLoading" class="table table-striped">
+      <table v-if="!isLoading" class="table table-striped">
         <thead>
           <tr>
             <th>الاسم</th>
@@ -131,7 +131,9 @@
               >
             </td>
             <td>
-              <a class="btn btn-sm delete" title="Delete"
+              <a @click="deleteBranch(branch.id)"
+                 class="btn btn-sm delete"
+                 title="Delete"
                 ><i class="material-icons">&#xE872;</i></a
               >
             </td>
@@ -139,73 +141,9 @@
         </tbody>
       </table>
 
-      <Pagination :pagination="branches" @paginate="getAllBranch()" :offset="4">
+      <Pagination v-if="!isLoading" :pagination="branches" @paginate="getAllBranch()" :offset="4">
       </Pagination>
 
-      <!--<div id="myModal1" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-
-              <h4 class="modal-title">إدارة صفات المنتجات للفرع :</h4>
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-
-                <h3>قم بإضافة أو حذف صفات لهذا الفرع :</h3>
-
-                <ul
-                        id="tasks-list"
-                        class="text-right list-unstyled p-0 custom-checkbox"
-                >
-                  <li>
-                    <input type="checkbox" />
-                    <label>شحن بضائع القسم النسائي</label>
-                  </li>
-                  <li>
-                    <input type="checkbox" />
-                    <label>شحن بضائع القسم النسائي</label>
-                  </li>
-                  <li>
-                    <input type="checkbox" />
-                    <label>شحن بضائع القسم النسائي</label>
-                  </li>
-                  <li>
-                    <input type="checkbox" />
-                    <label>شحن بضائع القسم النسائي</label>
-                  </li>
-                  <li>
-                    <input type="checkbox" />
-                    <label>شحن بضائع القسم النسائي</label>
-                  </li>
-                  <li>
-                    <input type="checkbox" />
-                    <label>شحن بضائع القسم النسائي</label>
-                  </li>
-                  <li>
-                    <input type="checkbox" />
-                    <label>شحن بضائع القسم النسائي</label>
-                  </li>
-                  <li>
-                    <input type="checkbox" />
-                    <label>شحن بضائع القسم النسائي</label>
-                  </li>
-                  <li>
-                    <input type="checkbox" />
-                    <label>شحن بضائع القسم النسائي</label>
-                  </li>
-
-
-
-                </ul>
-
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>-->
     </div>
   </div>
 </template>
@@ -214,7 +152,7 @@
 import { HTTP } from "../../http-common";
 // import localVar from "../../LocalVar";
 //import { BRANCHES_API } from "../../LocalVar";
-import { COMPANIES_API } from "../../LocalVar";
+import {BRANCHES_API, COMPANIES_API} from "../../LocalVar";
 import Pagination from "../../components/Pagination/Pagination.vue";
 import { ContentLoader } from "vue-content-loader";
 export default {
@@ -242,14 +180,21 @@ export default {
     Pagination,
     ContentLoader
   },
+  /*computed: {
+    branches () {
+      return this.$store.getters.allBranches;
+    },
+    showLoader() {
+      return this.$store.getters.showLoader;
+    }
+  },*/
   async mounted() {
     await this.getCompany();
     await this.getAllBranch();
   },
   methods: {
     getCompany() {
-      console.log(this.$route.params.id);
-      HTTP.get(COMPANIES_API + "/" + this.$route.params.id)
+      HTTP.get(COMPANIES_API + "/" + this.$route.params.id,this.branches.current_page)
         .then(res => {
           //console.log(res);
           this.company = res.data.data;
@@ -258,13 +203,16 @@ export default {
           console.log("handle server error from here");
         });
     },
+    /*getAllBranch() {
+      this.$store.dispatch('allBranches', this.$route.params.id,);
+    },*/
     getAllBranch() {
       this.isLoading = true;
       HTTP.get(
         COMPANIES_API +
           "/" +
           this.$route.params.id +
-          "/branches?page=" +
+          "/"+BRANCHES_API+"?page=" +
           this.branches.current_page
       )
         .then(res => {
@@ -280,19 +228,47 @@ export default {
           console.log("handle hhh server error from here");
         });
     },
+    deleteBranch(branchID) {
+      this.$swal.fire({
+        title: 'هل أنت متأكد؟',
+        text: "سيتم حذف هذا الفرع!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        cancelButtonText: 'لا',
+        confirmButtonText: 'نعم, أريد حذفه'
+      }).then((result) => {
+        if (result.value) {
+          HTTP
+                  .delete(BRANCHES_API+ "/" + branchID)
+                  .then(res => {
+                    console.log(res);
+                    this.$swal.fire({
+                              icon: "success",
+                              title:'تم حذف الفرع بنجاح!'
+                            }
+                    )
+                    this.getAllBranch();
+                  })
+                  .catch(() => {
+                    console.log("handle server error from here");
+                  });
+        }
+      })
+
+    },
     showBranch(branchID) {
       this.$router.push({ name: "Branch", params: { branchID: branchID } });
     },
     showProducts(branchID) {
       this.$router.push({ name: "Products", params: { branchID: branchID } });
-      //this.$router.push({ path: `/companies/${companyID}/branches` }); // -> /user/123
     },
     ManageAttributes(branchID) {
       this.$router.push({
         name: "ManageAttributes",
         params: { branchID: branchID }
       });
-      //this.$router.push({ path: `/companies/${companyID}/branches` }); // -> /user/123
     }
   }
 };

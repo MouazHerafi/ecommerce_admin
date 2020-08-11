@@ -137,10 +137,6 @@ export default {
           this.$swal.fire({
             icon: "success",
             title: "تمت إضافة الحسم بنجاح!",
-            cancelButtonText: "إغلاق",
-            showConfirmButton: false,
-            showCancelButton: true
-            // timer: 1500
           });
           console.log(res.data);
           this.$router.push({ name: "Coupons" });

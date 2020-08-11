@@ -13,7 +13,7 @@
       </h1>
 
       <div class="table-op clearfix">
-        <span v-if="!isLoading" class="float-right">
+        <span v-if="!showLoader" class="float-right">
           <span class="input-group">
             <input title="search" type="text" required="required" />
             <button type="submit" class="btn light-btn">بحث</button>
@@ -27,7 +27,7 @@
       </div>
 
       <ContentLoader
-        v-if="isLoading"
+        v-if="showLoader"
         :height="500"
         :width="1000"
         :speed="2"
@@ -86,7 +86,7 @@
         <rect x="933" y="54" rx="3" ry="3" width="24" height="33" />
       </ContentLoader>
 
-      <table v-if="!isLoading" class="table table-striped">
+      <table v-if="!showLoader" class="table table-striped">
         <thead>
           <tr>
             <th>الاسم</th>
@@ -117,7 +117,7 @@
                 @click="showCompany(company.id)"
                 title="Edit"
                 class="btn btn-sm edit"
-                ><i class="material-icons md-24">&#xE254;</i></a
+                ><i class="material-icons">&#xE254;</i></a
               >
             </td>
             <td>
@@ -125,14 +125,14 @@
                 @click="deleteCompany(company.id)"
                 class="btn btn-sm delete"
                 title="Delete"
-                ><i class="material-icons md-24">&#xE872;</i></a
+                ><i class="material-icons">&#xE872;</i></a
               >
             </td>
           </tr>
         </tbody>
       </table>
 
-      <Pagination
+      <Pagination v-if="!showLoader"
         :pagination="companies"
         @paginate="getAllCompany()"
         :offset="4"
@@ -143,22 +143,21 @@
 </template>
 
 <script>
-import { HTTP } from "../../http-common";
-import localVar from "../../LocalVar";
-import { COMPANIES_API } from "../../LocalVar";
+  import {COMPANIES_API} from "../../LocalVar";
 import { ContentLoader } from "vue-content-loader";
 import Pagination from "../../components/Pagination/Pagination.vue";
+  import {HTTP} from "../../http-common";
 export default {
   name: "Companies",
   data() {
     return {
-      companies: {
+     /* companies: {
         total: 0,
         per_page: 2,
         from: 1,
         to: 0,
         current_page: 1
-      },
+      },*/
       offset: 4,
       isLoading: false
     };
@@ -170,8 +169,19 @@ export default {
   async mounted() {
     await this.getAllCompany();
   },
+  computed: {
+    companies () {
+      return this.$store.getters.allCompanies;
+    },
+    showLoader() {
+      return this.$store.getters.showLoader;
+    }
+  },
   methods: {
     getAllCompany() {
+      this.$store.dispatch('allCompanies',this.companies.current_page);
+    },
+    /*getAllCompany() {
       this.isLoading = true;
       HTTP.get(COMPANIES_API + "?page=" + this.companies.current_page)
         .then(res => {
@@ -183,7 +193,7 @@ export default {
         .catch(() => {
           console.log("handle server error from here");
         });
-    },
+    },*/
     showCompany(companyID) {
       this.$router.push({ name: "Company", params: { id: companyID } });
     },
@@ -191,16 +201,34 @@ export default {
       this.$router.push({ name: "Branches", params: { id: companyID } });
     },
     deleteCompany(companyID) {
-      this.$axios
-        .delete(localVar.get_api_address() + "companies/" + companyID)
-        .then(res => {
-          console.log(res);
+      this.$swal.fire({
+        title: 'هل أنت متأكد؟',
+        text: "سيتم حذف هذه الشركة!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        cancelButtonText: 'لا',
+        confirmButtonText: 'نعم, أريد حذفه'
+      }).then((result) => {
+        if (result.value) {
+          HTTP
+                  .delete(COMPANIES_API+ "/" + companyID)
+                  .then(res => {
+                    console.log(res);
+                    this.$swal.fire({
+                      icon: "success",
+                      title:'تم حذف الشركة بنجاح!'
+                    }
+                    )
+                    this.getAllCompany();
+                  })
+                  .catch(() => {
+                    console.log("handle server error from here");
+                  });
+        }
+      })
 
-          //this.$router.push({ name: "Companies" });
-        })
-        .catch(() => {
-          console.log("handle server error from here");
-        });
     }
   }
 };

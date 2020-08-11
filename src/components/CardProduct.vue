@@ -2,7 +2,8 @@
     <div class="col-xl-3 col-sm-6 col-12">
         <div class="product">
             <div class="product-inner">
-                <img alt="alt" :src=[image]>
+                <img v-if="image!==null" alt="alt" :src=[image]>
+                <img v-if="image===null" alt="alt" src="/images/download.png">
                 <div class="cart-btns">
                     <a @click="deleteProduct(id)" class="btn btn-danger prodelete-btn">حذف</a>
                     <a class="btn btn-danger proedit-btn" >حظر</a>

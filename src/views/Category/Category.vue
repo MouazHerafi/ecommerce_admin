@@ -232,6 +232,10 @@ export default {
         this.clickedCategory
       )
         .then(res => {
+          this.$swal.fire({
+            icon: "success",
+            title: "تم تحديث الفئة بنجاح!",
+          });
           console.log(res);
 
           this.$router.push({ name: "Categories" });

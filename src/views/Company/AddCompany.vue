@@ -155,10 +155,6 @@ export default {
           this.$swal.fire({
             icon: "success",
             title: "تمت إضافة الشركة بنجاح!",
-            cancelButtonText: "إغلاق",
-            showConfirmButton: false,
-            showCancelButton: true
-            // timer: 1500
           });
           this.$router.push({ name: "Companies" });
           console.log(res.data);

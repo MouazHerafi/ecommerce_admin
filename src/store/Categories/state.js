@@ -1,6 +1,6 @@
-export const companiesState = {
+export const categoriesState = {
     showLoader: false,
-    companies: {
+    categories: {
         total: 0,
         per_page: 2,
         from: 1,

@@ -67,15 +67,12 @@ export default {
     };
   },
   mounted() {
-    //this.getProductsForBranch();
     this.getProducts();
   },
   methods: {
-    /* with pagination  */
     getProducts() {
-      //this.isLoading = true;
       HTTP.get(
-        "v1/branches/" +
+        "branches/" +
           this.$route.params.branchID +
           "/products?page=" +
           this.products.current_page
@@ -83,32 +80,12 @@ export default {
         console.log(res);
 
         this.products = res.data;
-        //console.log("hhhhhh"+this.products.data[0].image.path);
-      });
-      /*.catch(error => {
-                console.log(error.response.data);
+
+      })
+    .catch(() => {
                 console.log("handle server error from here");
-              })*/
-      /* .finally(() => (this.isLoading = false))*/
-    },
-    getProductsForBranch() {
-      console.log(this.$route.params.branchID);
-      this.$axios
-        .get(`api/products?branch=${this.$route.params.branchID}&page=1`)
-        .then(res => {
-          console.log(res);
-          if (res.data.error) {
-            alert(res.data.message);
-          } else {
-            //console.log(res.data);
-            this.products = res.data.products;
-            this.pageCount = Math.ceil(
-              res.data.totalResults /
-                this.$options.static.visibleItemsPerPageCount
-            );
-          }
-        })
-        .catch(error => console.log(error));
+              });
+
     }
   },
   computed: {

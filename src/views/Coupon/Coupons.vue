@@ -11,7 +11,7 @@
       <h1><i class="fa fa-tags block-icon" aria-hidden="true"></i>الحسومات</h1>
 
       <div class="table-op clearfix">
-        <span v-if="!isLoading" class="float-right">
+        <span v-if="!showLoader" class="float-right">
           <span class="input-group">
             <input title="search" type="text" required="required" />
             <button type="submit" class="btn light-btn">بحث</button>
@@ -24,7 +24,7 @@
         </router-link>
       </div>
       <ContentLoader
-        v-if="isLoading"
+        v-if="showLoader"
         :height="500"
         :width="1000"
         :speed="2"
@@ -82,7 +82,7 @@
         <rect x="782" y="56" rx="3" ry="3" width="72" height="33" />
         <rect x="933" y="54" rx="3" ry="3" width="24" height="33" />
       </ContentLoader>
-      <table v-if="!isLoading" class="table table-striped">
+      <table v-if="!showLoader" class="table table-striped">
         <thead>
           <tr>
             <th>كود الحسم</th>
@@ -116,27 +116,28 @@
         </tbody>
       </table>
 
-      <Pagination :pagination="coupons" @paginate="getAllCoupon()" :offset="4">
+      <Pagination v-if="!showLoader" :pagination="coupons" @paginate="getAllCoupon()" :offset="4">
       </Pagination>
     </div>
   </div>
 </template>
 
 <script>
-import localVar from "../../LocalVar";
+  import {COUPON_API} from "../../LocalVar";
 import Pagination from "../../components/Pagination/Pagination.vue";
 import { ContentLoader } from "vue-content-loader";
+  import {HTTP} from "../../http-common";
 export default {
   name: "Coupons",
   data() {
     return {
-      coupons: {
+      /*coupons: {
         total: 0,
         per_page: 2,
         from: 1,
         to: 0,
         current_page: 1
-      },
+      },*/
       offset: 4,
       isLoading: false
     };
@@ -145,11 +146,22 @@ export default {
     Pagination,
     ContentLoader
   },
+  computed: {
+    coupons () {
+      return this.$store.getters.allCoupons;
+    },
+    showLoader() {
+      return this.$store.getters.showLoader;
+    }
+  },
   async mounted() {
     await this.getAllCoupon();
   },
   methods: {
     getAllCoupon() {
+      this.$store.dispatch('allCoupons',this.coupons.current_page);
+    },
+    /*getAllCoupon() {
       this.isLoading = true;
       this.$axios
         .get(
@@ -166,21 +178,38 @@ export default {
         .catch(() => {
           console.log("handle server error from here");
         });
-    },
+    },*/
     showCoupon(couponID) {
       this.$router.push({ name: "Coupon", params: { CouponID: couponID } });
     },
     deleteCoupon(couponID) {
-      this.$axios
-        .delete(localVar.get_api_address() + "coupons/" + couponID)
-        .then(res => {
-          console.log(res);
-
-          //this.$router.push({ name: "Coupons" });
-        })
-        .catch(() => {
-          console.log("handle server error from here");
-        });
+      this.$swal.fire({
+        title: 'هل أنت متأكد؟',
+        text: "سيتم حذف هذه الشركة!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        cancelButtonText: 'لا',
+        confirmButtonText: 'نعم, أريد حذفه'
+      }).then((result) => {
+        if (result.value) {
+          HTTP
+                  .delete(COUPON_API+ "/" + couponID)
+                  .then(res => {
+                    console.log(res);
+                    this.$swal.fire({
+                              icon: "success",
+                              title:'تم حذف الشركة بنجاح!'
+                            }
+                    )
+                    this.getAllCoupon();
+                  })
+                  .catch(() => {
+                    console.log("handle server error from here");
+                  });
+        }
+      })
     }
   }
 };

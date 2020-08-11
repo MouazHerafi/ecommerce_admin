@@ -233,7 +233,7 @@ export default {
       this.getAllUser(escape(search));
     },
     getAllUser(search) {
-      HTTP.get("v1/employeeSearchEmail?email=" + search)
+      HTTP.get("employeeSearchEmail?email=" + search)
         .then(res => {
           console.log(res);
 

@@ -5,12 +5,13 @@ const PORT = "8000";
 const token = localStorage.getItem("token");
 // eslint-disable-next-line no-unused-vars
 export let MESSAGE_ERROR = "";
+export let MESSAGE_WITHOUT_ERROR = "";
 export const HTTP = axios.create({
-  baseURL: IP + ":" + PORT +`/api/`,
+  baseURL: IP + ":" + PORT +`/api/v1/`,
   headers: {
     Authorization: token,
     //Content_Type: "application/json;charset=UTF-8"
-    Content_Type: "application/x-www-form-urlencoded"
+    //Content_Type: "application/x-www-form-urlencoded"
   }
 });
 
@@ -63,7 +64,13 @@ HTTP.interceptors.response.use(
           }, 1000);
           break;
         case 422:
-          MESSAGE_ERROR = error.response.data.message;
+       /*   if(error.response.data.error!==null){
+            MESSAGE_WITHOUT_ERROR = error.response.data.error.message
+          }
+          else {*/
+            MESSAGE_ERROR = error.response.data.message;
+       //   }
+
       }
       return Promise.reject(error.response);
     }

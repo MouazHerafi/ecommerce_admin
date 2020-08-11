@@ -190,13 +190,8 @@ export default {
           this.$swal.fire({
             icon: "success",
             title: "تم تحديث الشركة بنجاح!",
-            cancelButtonText: "إغلاق",
-            showConfirmButton: false,
-            showCancelButton: true
-            // timer: 1500
           });
           console.log(res);
-
           this.$router.push({ name: "Companies" });
         })
         .catch(() => {

@@ -10,13 +10,19 @@
     </ul>
     <!-- نهاية قائمة التصفح العليا -->
 
+    <loading
+            :active.sync="showLoader"
+            :is-full-page="false"
+            color="#ef3e58"
+    ></loading>
+
     <div class="content-block">
       <h1>
         <i class="fa fa-plus block-icon" aria-hidden="true"></i>قم بإضافة أو حذف
         صفات لهذا الفرع :
       </h1>
       <br />
-      <div class="check">
+      <div v-if="!showLoader" class="check">
         <ul class="text-right list-unstyled p-0 custom-checkbox">
           <div v-for="(attribute, i) in attributes.data" :key="i">
             <li>
@@ -40,53 +46,73 @@
 
 <script>
 import { HTTP } from "../../http-common";
+import {SYNCATTRIBUTES_API} from "../../LocalVar";
 
 export default {
   name: "ManageAttributes",
   data: function() {
     return {
-      attributes: [],
+      //attributes: [],
       attributesAll: {
         attributesIds: []
-      }
+      },
+      isLoading: false
     };
+  },
+  computed: {
+    attributes () {
+      return this.$store.getters.allAttributes;
+    },
+    showLoader() {
+      return this.$store.getters.showLoader;
+    }
   },
   async mounted() {
     await this.getAttributesBranch();
   },
-  /* computed: {
-            attributesIdsFun () {
-
-                return this.attributes.data.filter(attribute => attribute.isRelation).map(id => id.id)
-            }
-        },*/
   methods: {
     getAttributesBranch() {
-      HTTP.get("v1/showAttributeBranch" + "/" + this.$route.params.branchID)
+      this.$store.dispatch('allAttributes',this.$route.params.branchID);
+    },
+    /*getAttributesBranch() {
+      this.isLoading = true;
+      HTTP.get("showAttributeBranch" + "/" + this.$route.params.branchID)
         .then(res => {
           console.log(res);
           this.attributes = res.data;
+          this.isLoading = false;
         })
         .catch(() => {
           console.log("handle hhh server error from here");
         });
-    },
+    },*/
     updateAttribute() {
       this.attributesAll.attributesIds = this.attributes.data
-        .filter(attribute => attribute.isRelation)
-        .map(id => id.id);
-      HTTP.post(
-        "v1/syncAttributes" + "/" + this.$route.params.branchID,
-        this.attributesAll
-      )
-        .then(res => {
-          console.log(res);
-          //this.$router.push({ name: "ManageAttributes" });
-        })
-        .catch(error => {
-          console.log(error);
-          console.log("handle server error from here");
-        });
+              .filter(attribute => attribute.isRelation)
+              .map(id => id.id);
+      this.$swal.fire({
+        title: "هل تريد الاستمرار؟",
+        icon: "question",
+        iconHtml: "؟",
+        confirmButtonText: "نعم",
+        cancelButtonText: "لا",
+        showCancelButton: true,
+        showCloseButton: true,
+        preConfirm: () => {
+          HTTP.post(
+                  SYNCATTRIBUTES_API + "/" + this.$route.params.branchID,
+                  this.attributesAll
+          )
+                  .then(res => {
+                    console.log(res);
+                    this.getAttributesBranch();
+                  })
+                  .catch(() => {
+                    console.log("handle server error from here");
+                  });
+        }
+      });
+
     }
   }
 };

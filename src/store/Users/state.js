@@ -6,6 +6,5 @@ export const usersState = {
         from: 1,
         to: 0,
         current_page: 1
-    },
-    user: {}
+    }
 }

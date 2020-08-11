@@ -46,6 +46,7 @@
         :key="i"
         :node="child"
         @editCat="editCat"
+        @deleteCat="deleteCat"
       ></node-tree>
     </div>
   </a>

@@ -243,58 +243,6 @@
           </div>
         </div>
 
-        <!-- <div class="form-group">
-          <label for="company">الشركة المطلوبة</label>
-          <select
-            v-on:input="showBranches($event.target.value)"
-            id="company"
-            name="company"
-            v-model="newUser.location"
-            class="form-control"
-            :class="{ 'error-feild': isSubmitted && $v.newUser.location.$error }"
-          >
-            <option
-              v-for="company in companies"
-              :value="company.id"
-              :key="company.id"
-            >
-              {{ company.name }}
-            </option>
-          </select>
-          <div
-            v-if="isSubmitted && !$v.newUser.location.required"
-            class="invalid-feedback"
-          >
-            {{ msg_req }}
-          </div>
-        </div>-->
-
-        <!-- <div class="form-group">
-          <label for="branch">الفرع المطلوب</label>
-          <select
-            :disabled="isDisabled == true"
-            id="branch"
-            name="branch"
-            v-model="newUser.branch"
-            class="form-control"
-            :class="{ 'error-feild': isSubmitted && $v.newUser.branch.$error }"
-          >
-            <option
-              v-for="branch in branches"
-              :value="branch.id"
-              :key="branch.id"
-            >
-              {{ branch.name }}
-            </option>
-          </select>
-          <div
-            v-if="isSubmitted && !$v.newUser.branch.required"
-            class="invalid-feedback"
-          >
-            {{ msg_req }}
-          </div>
-        </div>>\-->
-
         <div class="form-group">
           <button class="btn btn-primary">تأكيد</button>
         </div>
@@ -305,7 +253,7 @@
 
 <script>
 import { required, email, sameAs, minLength } from "vuelidate/lib/validators";
-import localVar, { ROLES_API } from "../../LocalVar";
+import localVar, { ROLES_API, USERS_API } from "../../LocalVar";
 import { HTTP, MESSAGE_ERROR } from "../../http-common";
 export default {
   name: "AddUser",
@@ -388,7 +336,6 @@ export default {
           if (this.$v.$invalid) {
             return;
           }
-
           this.addNewUser();
         }
       });
@@ -397,7 +344,6 @@ export default {
       HTTP.get(ROLES_API)
         .then(res => {
           console.log(res);
-
           this.roles = res.data.data;
         })
         .catch(() => {
@@ -405,23 +351,18 @@ export default {
         });
     },
     addNewUser() {
-      console.log(this.newUser);
-      this.$axios
-        .post(localVar.get_api_address() + "users/", this.newUser)
+      HTTP.post(USERS_API, this.newUser)
         .then(res => {
-          //this.$router.push({ name: "Users" });
-
+          this.$router.push({ name: "Users" });
           this.$swal.fire({
             icon: "success",
             title: "تمت إضافة الموظف بنجاح!",
-            showConfirmButton: false
-            // timer: 1500
           });
-
           console.log(res.data);
         })
         .catch(error => {
-          this.errors = error.response.data.errors;
+          console.log(error)
+          this.errors = error.data.errors;
           this.$swal.fire({
             icon: "error",
             title: "Oops...",
@@ -429,24 +370,6 @@ export default {
           });
         });
     }
-    /* showBranches(i) {
-      //this.getBranches(i);
-      this.isDisabled = false;
-    },
-    getBranches(companyID) {
-      this.$axios
-        .get("url" + companyID)
-        .then(res => {
-          console.log(res);
-          if (res.data.error) {
-            alert(res.data.message);
-          } else {
-            //console.log(res.data);
-            this.branches = res.data.branches;
-          }
-        })
-        .catch(error => console.log(error));
-    }*/
   }
 };
 </script>
@@ -455,22 +378,18 @@ export default {
   display: flex;
   align-items: center;
 }
-
 .v-select .dropdown li {
   border-bottom: 1px solid rgba(112, 128, 144, 0.1);
 }
-
 .v-select .dropdown li:last-child {
   border-bottom: none;
 }
-
 .v-select .dropdown li a {
   padding: 10px 20px;
   width: 100%;
   font-size: 1.25em;
   color: #3c3c3c;
 }
-
 .v-select .dropdown-menu .active > a {
   color: #fff;
 }

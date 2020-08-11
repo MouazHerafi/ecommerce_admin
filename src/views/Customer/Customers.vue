@@ -12,7 +12,7 @@
       <h1><i class="fa fa-users block-icon" aria-hidden="true"></i>الزبائن</h1>
 
       <div class="table-op clearfix">
-        <span class="float-right">
+        <span v-if="!showLoader" class="float-right">
           <span class="input-group">
             <input title="search" type="text" required="required" />
             <button type="submit" class="btn light-btn">بحث</button>
@@ -20,11 +20,11 @@
         </span>
       </div>
       <loading
-        :active.sync="isLoading"
+        :active.sync="showLoader"
         :is-full-page="false"
         color="#ef3e58"
       ></loading>
-      <table class="table table-striped">
+      <table v-if="!showLoader" class="table table-striped">
         <thead>
           <tr>
             <th>الاسم</th>
@@ -157,19 +157,19 @@
 
 <script>
 import { HTTP } from "../../http-common";
-import { USERS_API } from "../../LocalVar";
 import Pagination from "../../components/Pagination/Pagination.vue";
+import {CARDS_API} from "../../LocalVar";
 
 export default {
   data: function() {
     return {
-      customers: {
+      /*customers: {
         total: 0,
         per_page: 2,
         from: 1,
         to: 0,
         current_page: 1
-      },
+      },*/
       offset: 4,
       chargeCards: {
         balance: 0,
@@ -186,8 +186,19 @@ export default {
   async mounted() {
     await this.getAllCustomer();
   },
+  computed: {
+    customers () {
+      return this.$store.getters.allUsers;
+    },
+    showLoader() {
+      return this.$store.getters.showLoader;
+    }
+  },
   methods: {
     getAllCustomer() {
+      this.$store.dispatch('allCustomers',this.customers.current_page);
+    },
+    /*getAllCustomer() {
       this.isLoading = true;
       HTTP.get(USERS_API + "?type=customer&page=" + this.customers.current_page)
         .then(res => {
@@ -199,16 +210,36 @@ export default {
           console.log(error.response.data);
           console.log("handle server error from here");
         })*/
-        .finally(() => (this.isLoading = false));
-    },
+       // .finally(() => (this.isLoading = false));
+   // },
     chargeBalance(id) {
-      HTTP.put("v1/cards/" + id, this.chargeCards)
-        .then(res => {
-          //this.$router.push({ name: "Customers" });
-          this.getAllCustomer();
-          console.log(res.data);
-        })
-        .catch(() => {});
+      this.$swal.fire({
+        title: 'الأحكام والشروط',
+        input: 'checkbox',
+        inputValue: 1,
+        inputPlaceholder:
+                'أوافق على شحن البطاقة رصيد قيمته '+ this.chargeCards.balance,
+        showCancelButton: true,
+        cancelButtonText: 'تراجع',
+        cancelButtonColor: '#d33',
+        confirmButtonText:
+                'متابعة <i class="fa fa-arrow-left"></i>',
+      }).then((result) => {
+        if (result.value) {
+          HTTP.put(CARDS_API +"/" + id, this.chargeCards)
+                  .then(res => {
+                    this.$swal.fire({
+                              icon: "success",
+                              title:'تم شحن البطاقة بمبلغ قيمته'+ this.chargeCards.balance
+                            }
+                    )
+                    this.getAllCustomer();
+                    console.log(res.data);
+                  })
+                  .catch(() => {});
+
+        }})
+
     },
     setCost(balance) {
       this.chargeCards.cost = parseInt(balance) + parseInt(100);

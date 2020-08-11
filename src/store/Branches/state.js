@@ -1,6 +1,6 @@
-export const companiesState = {
+export const branchesState = {
     showLoader: false,
-    companies: {
+    branches: {
         total: 0,
         per_page: 2,
         from: 1,
