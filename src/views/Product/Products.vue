@@ -4,6 +4,7 @@
     <ul class="breadcrumb custom-breadcrumb">
       <li class="breadcrumb-item"><a href="#">لوحتي</a></li>
       <li class="breadcrumb-item "><a href="#">لوحة التحكم</a></li>
+      <li class="breadcrumb-item "><a href="#">{{branch.name}}</a></li>
       <li class="breadcrumb-item active"><a href="#">المنتجات</a></li>
     </ul>
     <!-- نهاية قائمة التصفح العليا -->
@@ -13,22 +14,26 @@
         <div class="content-block">
           <h1>
             <i class="fa fa-truck block-icon" aria-hidden="true"></i>منتجات فرع
-            المزة
+            {{branch.name}}
           </h1>
 
-          <search-field v-model="search" />
+          <loading
+                  :active.sync="isLoading"
+                  :is-full-page="false"
+                  color="#ef3e58"
+          ></loading>
 
-          <div class="row">
+          <search-field v-if="!isLoading" v-model="search" />
+
+          <div v-if="!isLoading" class="row">
             <card-product
               v-for="(product, i) in products.data"
               :key="i"
-              :id="product.id"
-              :name="product.name"
-              :price="product.price"
-              :image="product.image.path"
+              :product="product"
             />
           </div>
           <Pagination
+                  v-if="!isLoading"
             :pagination="products"
             @paginate="getProducts()"
             :offset="4"
@@ -45,6 +50,7 @@ import Pagination from "../../components/Pagination/Pagination.vue";
 import CardProduct from "../../components/CardProduct.vue";
 import SearchField from "../../components/SearchField.vue";
 import { HTTP } from "../../http-common";
+import {BRANCHES_API, PRODUCTSBYBRANCH_API} from "../../LocalVar";
 
 export default {
   name: "Products",
@@ -62,31 +68,52 @@ export default {
         to: 0,
         current_page: 1
       },
+      branch:{
+        name:""
+      },
       offset: 4,
-      search: ""
+      search: "",
+      isLoading: false
     };
   },
-  mounted() {
-    this.getProducts();
+  async mounted() {
+
+    await this.getProducts();
+    await this.getBranch();
+
   },
   methods: {
     getProducts() {
+      this.isLoading = true;
       HTTP.get(
-        "branches/" +
+              PRODUCTSBYBRANCH_API +"/"+
           this.$route.params.branchID +
-          "/products?page=" +
+          "?page=" +
           this.products.current_page
       ).then(res => {
         console.log(res);
 
         this.products = res.data;
+        this.isLoading = false;
 
       })
     .catch(() => {
                 console.log("handle server error from here");
               });
 
-    }
+    },
+    getBranch() {
+      HTTP.get(BRANCHES_API + "/" + this.$route.params.branchID)
+              .then(res => {
+                console.log(res);
+
+                this.branch = res.data.data[0];
+              })
+              .catch(() => {
+                console.log("handle server error from here");
+              });
+
+    },
   },
   computed: {
     filteredProducts() {

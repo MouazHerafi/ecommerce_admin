@@ -18,30 +18,18 @@
                     <a href="/images/product-01.jpg">
                       <img
                         class="img-fluid"
-                        src="/images/product-01.jpg"
+                        :src=[clickedProduct.media[0].path]
                         alt="Product Image"
                       />
                     </a>
                   </div>
-                  <ul class="proimage-thumb">
-                    <li>
+                  <ul v-if="clickedProduct.media.length>1" class="proimage-thumb">
+                    <li
+                            v-for="(image, i) in clickedProduct.media"
+                            :key="i"
+                    >
                       <a href="/images/product-01.jpg"
-                        ><img src="/images/product-01.jpg" alt="Product Image"
-                      /></a>
-                    </li>
-                    <li>
-                      <a href="/images/product-01.jpg"
-                        ><img src="/images/product-01.jpg" alt="Product Image"
-                      /></a>
-                    </li>
-                    <li>
-                      <a href="/images/product-01.jpg"
-                        ><img src="/images/product-01.jpg" alt="Product Image"
-                      /></a>
-                    </li>
-                    <li>
-                      <a href="/images/product-01.jpg"
-                        ><img src="/images/product-01.jpg" alt="Product Image"
+                        ><img :src=[image.path] alt="Product Image"
                       /></a>
                     </li>
                   </ul>
@@ -51,9 +39,11 @@
             <div class="col-md-6 col-sm-12">
               <div class="product-info">
                 <h2>{{clickedProduct.name}}</h2>
-                <p class="mb-0">الشركة المصنعة : ابل</p>
-                <p class="mb-0">فرع المزة</p>
-                <p class="product_price">$5528</p>
+                <p class="mb-0">{{clickedProduct.category.name}}</p>
+                <p class="mb-0">{{clickedProduct.details}}</p>
+                <p v-if="clickedProduct.status==='available'" class="mb-0">متوفر</p>
+                <p class="product_price">${{clickedProduct.price}}</p>
+
               </div>
             </div>
           </div>
@@ -72,11 +62,16 @@ export default {
   data: function() {
     return {
       clickedProduct: {
-        name: "",
-        price: "",
-        quantity: "",
-        status: "",
-        details: ""
+        name:"",
+        details:"",
+        price:"",
+        status:"",
+        category:{
+          id:"",
+          name:"",
+          parent:""
+        },
+        media:[]
       },
     };
   },
@@ -85,13 +80,12 @@ export default {
   },
   methods: {
     getProduct() {
-      console.log(this.$route.params.productID);
       HTTP
               .get( PRODUCTS_API +"/" + this.$route.params.productID)
               .then(res => {
                 console.log(res);
 
-                this.clickedProduct = res.data.data;
+                this.clickedProduct = res.data.data[0];
               })
               .catch(() => {
                 console.log("handle server error from here");

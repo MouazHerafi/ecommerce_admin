@@ -78,6 +78,30 @@
             {{ error }}
           </div>
         </div>
+        <div class="form-group">
+          <label>رقم الهاتف</label>
+          <input
+                  id="phone"
+                  v-model="newBranch.phone"
+                  class="form-control"
+                  :class="{
+              'error-feild': isSubmitted && $v.newBranch.phone.$error
+            }"
+          />
+          <div
+                  v-if="isSubmitted && !$v.newBranch.phone.required"
+                  class="invalid-feedback"
+          >
+            {{ msg_req }}
+          </div>
+          <div
+                  v-for="(error, i) in errors.phone"
+                  :key="i"
+                  class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
+        </div>
         <!--<div class="form-group">
           <label>البريد الالكتروني</label>
           <input
@@ -175,7 +199,7 @@ export default {
         name: "",
         location: "",
         //email: "",
-        //phone: "",
+        phone: "",
         company_id: Number.parseInt(this.$route.params.id, 10),
         user_id: undefined
       },
@@ -183,6 +207,7 @@ export default {
       errors: {
         name: [],
         location: [],
+        phone: [],
         user_id: []
       },
       msg_req: localVar.get_msg_req(),
@@ -196,6 +221,9 @@ export default {
         minLength: minLength(4)
       },
       location: {
+        required
+      },
+      phone: {
         required
       },
       user_id: {
@@ -230,7 +258,7 @@ export default {
       }
     },
     search(loading, search /*, vm*/) {
-      this.getAllUser(escape(search));
+      this.getAllUser(search);
     },
     getAllUser(search) {
       HTTP.get("employeeSearchEmail?email=" + search)

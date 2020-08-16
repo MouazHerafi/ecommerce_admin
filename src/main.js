@@ -1,5 +1,8 @@
 import Vue from "vue";
 import App from "./App.vue";
+import VueResource from "vue-resource";
+
+Vue.use(VueResource);
 import Vuelidate from "vuelidate";
 import router from "./router";
 import store from "./store";
@@ -18,20 +21,33 @@ import vSelect from "vue-select";
 
 Vue.component("v-select", vSelect);
 import "vue-select/dist/vue-select.css";
+import { HTTP } from "./http-common";
 
 Vue.use(Vuelidate);
 
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
 
-//axios.defaults.headers.get['content-type'] = 'application/json;charset=UTF-8';
-
 router.beforeEach((to, from, next) => {
-  //console.log(to);
-  axios.defaults.headers.common["Authorization"] = localStorage.getItem(
-    "token"
-  );
-  next();
+  var token = localStorage.getItem("token");
+  HTTP.defaults.headers.common["Authorization"] = token;
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (token) {
+      HTTP.get("checkToken").then(res => {
+        if (res.data.message === "your token is valid") {
+          next();
+          return;
+        }
+      });
+    }else {
+        router.replace({
+        path: "/pages/login"
+        //query: { redirect: router.currentRoute.fullPath }
+    });
+    }
+  } else {
+    next();
+  }
 });
 
 new Vue({

@@ -56,8 +56,8 @@
                   <a class="dropdown-item" href="#"
                     ><i class="fa fa-user"></i>عبد السلام حلاوة</a
                   >
-                  <a class="dropdown-item" href="#" @click="logoutNow()"
-                    ><i class="fa fa-lock"></i>تسجيل الخروج</a
+                  <button class="dropdown-item" @click="logoutNow()"
+                    ><i class="fa fa-lock"></i>تسجيل الخروج</button
                   >
                 </div>
               </div>
@@ -87,11 +87,8 @@
               <router-link to="/customers">
                 <li @click="close()"><a @click="close()"><i class="fa fa-users"></i>الزبائن</a></li>
               </router-link>
-              <router-link to="/">
+              <router-link to="/orders">
                 <li @click="close()"><a @click="close()"><i class="fa fa-shopping-cart"></i>الطلبات</a></li>
-              </router-link>
-              <router-link to="/">
-                <li @click="close()"><a @click="close()"><i class="fa fa-shopping-cart"></i>البطاقات</a></li>
               </router-link>
               <router-link to="/coupons">
                 <li @click="close()"><a @click="close()"><i class="fa fa-shopping-cart"></i>الحسومات</a></li>
@@ -111,6 +108,9 @@
 </template>
 
 <script>
+import {HTTP} from "../http-common";
+import {LOGOUT_API} from "../LocalVar";
+
 export default {
   name: "AppHeader",
   data: function(){
@@ -120,14 +120,6 @@ export default {
     }
 
 
-  },
-  created() {
-    //this.isOpen=false;
-
-    var token = localStorage.getItem("token");
-    if (!token) {
-      this.$router.push({name: "Login"});
-    }
   },
   methods: {
     open () {
@@ -147,8 +139,16 @@ export default {
     }
     ,
     logoutNow() {
-      localStorage.setItem("token", "");
-      this.$router.push({ name: "Login" });
+      HTTP.post(LOGOUT_API)
+              .then(res => {
+                console.log(res)
+                localStorage.setItem("token","");
+                this.$router.push({ name: "Login" });
+              })
+              .catch(() => {
+
+              });
+
     }
 
 

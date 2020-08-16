@@ -217,7 +217,7 @@ export default {
         .then(res => {
           console.log(res);
 
-          this.clickedCategory = res.data.data;
+          this.clickedCategory = res.data.data[0];
           this.isLoading = false;
         })
         .catch(() => {

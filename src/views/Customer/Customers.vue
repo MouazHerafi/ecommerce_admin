@@ -78,6 +78,7 @@
       </table>
 
       <Pagination
+              v-if="!showLoader"
         :pagination="customers"
         @paginate="getAllCustomer()"
         :offset="4"

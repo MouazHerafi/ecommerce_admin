@@ -2,24 +2,30 @@
     <div class="col-xl-3 col-sm-6 col-12">
         <div class="product">
             <div class="product-inner">
-                <img v-if="image!==null" alt="alt" :src=[image]>
-                <img v-if="image===null" alt="alt" src="/images/download.png">
+                 <img alt="alt" :src=[product.media[0].path]>
                 <div class="cart-btns">
                     <a @click="deleteProduct(id)" class="btn btn-danger prodelete-btn">حذف</a>
                     <a class="btn btn-danger proedit-btn" >حظر</a>
                 </div>
             </div>
-            <div @click="showProduct(id)" class="pro-desc">
-                <h5><a href="">{{name}}</a></h5>
-                <div class="price">{{price}}</div>
+            <div class="pro-desc">
+                <router-link :to="{
+                                name: 'Product',
+                                params: { productID: product.id }
+                              }"
+                >
+                <h5><a href="">{{product.name}}</a></h5>
+                </router-link>
+                <div class="price">{{product.price}}</div>
             </div>
+
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    props: ["id","name","price","image"],
+    props: ["product"],
     name: "CardProduct",
     methods: {
         deleteProduct(id){
@@ -36,9 +42,6 @@ export default {
       	}
 
       });*/
-        },
-        showProduct(id){
-            this.$router.push({ name: "Product", params: { productID: id } });
         }
     }
 }

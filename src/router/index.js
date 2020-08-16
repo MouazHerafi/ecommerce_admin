@@ -24,6 +24,8 @@ import AddCoupon from "../views/Coupon/AddCoupon.vue";
 import NewAttribute from "../views/NewAttribute";
 import ManageAttributes from "../views/Branch/ManageAttributes";
 import Customers from "../views/Customer/Customers";
+import Orders from "../views/Order/Orders";
+import Order from "../views/Order/Order";
 
 Vue.use(VueRouter);
 
@@ -31,6 +33,9 @@ const routes = [
   {
     path: "/",
     name: "Home",
+    meta: {
+      requiresAuth: true
+    },
     redirect: "/dashboard",
     component: TheContainer,
     children: [
@@ -170,9 +175,22 @@ const routes = [
             },
             name: "AddBranch",
             component: AddBranch
-          },
+          }
+        ]
+      },
+      {
+        path: "branches",
+        meta: {
+          label: "Branches"
+        },
+        component: {
+          render(c) {
+            return c("router-view");
+          }
+        },
+        children: [
           {
-            path: ":id/branches/:branchID",
+            path: ":branchID",
             meta: {
               label: "Branch Details"
             },
@@ -180,15 +198,33 @@ const routes = [
             component: Branch
           },
           {
-            path: ":id/branches/:branchID/products",
-            meta: {
-              label: "Products"
-            },
+            path: ":branchID/products",
             name: "Products",
             component: Products
           },
           {
-            path: ":id/branches/:branchID/products/:productID",
+            path: ":branchID/manage-attribute",
+            meta: {
+              label: "Manage Attributes"
+            },
+            name: "ManageAttributes",
+            component: ManageAttributes,
+          }
+          ]
+      },
+      {
+        path: "products",
+        meta: {
+          label: "Products"
+        },
+        component: {
+          render(c) {
+            return c("router-view");
+          }
+        },
+        children: [
+          {
+            path: ":productID",
             meta: {
               label: "Product"
             },
@@ -232,9 +268,9 @@ const routes = [
         ]
       },
       {
-        path: "branches",
+        path: "orders",
         meta: {
-          label: "Branches"
+          label: "Orders"
         },
         component: {
           render(c) {
@@ -243,14 +279,18 @@ const routes = [
         },
         children: [
           {
-            path: ":branchID/manage-attribute",
-            meta: {
-              label: "Manage Attributes"
-            },
-            name: "ManageAttributes",
-            component: ManageAttributes,
+            path: "",
+            name: "Orders",
+            component: Orders
           },
-
+          {
+            path: ":OrderID",
+            meta: {
+              label: "Order Details"
+            },
+            name: "Order",
+            component: Order
+          }
         ]
       },
       {

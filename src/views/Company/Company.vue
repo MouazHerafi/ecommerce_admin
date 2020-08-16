@@ -101,6 +101,52 @@
         </div>
 
         <div class="form-group">
+          <label>اختصاص الشركة الحالي</label>
+          <input
+                  disabled
+                  class="form-control"
+                  type="text"
+                  v-model="oldCategory.name"
+          />
+        </div>
+
+        <div class="form-group">
+          <div class="style-chooser">
+            <v-select
+                    dir="rtl"
+                    label="name"
+                    :filterable="false"
+                    :options="categories.data"
+                    v-model="clickedCompany.category.id"
+                    placeholder="اختر اختصاص الشركة إذا كنت ترغب بتغييره"
+                    :reduce="name => name.id"
+                    @search="onSearch"
+            >
+              <template slot="no-options">
+                ابحث عن الفئة المطلوبة..
+              </template>
+              <template slot="category" slot-scope="category">
+                <div class="d-center">
+                  {{ category.name }}
+                </div>
+              </template>
+              <template slot="selected-category" slot-scope="category">
+                <div class="selected d-center">
+                  {{ category.name }}
+                </div>
+              </template>
+            </v-select>
+          </div>
+          <div
+                  v-for="(error, i) in errors.category"
+                  :key="i"
+                  class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
+        </div>
+
+        <div class="form-group">
           <button class="btn btn-primary">
             تأكيد
           </button>
@@ -111,7 +157,7 @@
 </template>
 
 <script>
-import localVar, { COMPANIES_API } from "../../LocalVar";
+  import localVar, {CATEGORIES_API, COMPANIES_API} from "../../LocalVar";
 import { HTTP } from "../../http-common";
 import { minLength, required } from "vuelidate/lib/validators";
 export default {
@@ -122,12 +168,28 @@ export default {
         name: "",
         //description: "",
         // email: "",
-        phone: ""
+        phone: "",
+        category:{
+          id:"",
+          name:""
+        }
+      },
+      categories: {
+        total: 0,
+        per_page: 2,
+        from: 1,
+        to: 0,
+        current_page: 1
+      },
+      oldCategory:{
+        id:"",
+        name:""
       },
       isSubmitted: false,
       errors: {
         name: [],
-        phone: []
+        phone: [],
+        category: []
       },
       msg_req: localVar.get_msg_req(),
       msg_min_length: localVar.get_msg_min_length(4),
@@ -169,13 +231,43 @@ export default {
         }
       });
     },
+    onSearch(search, loading) {
+      if (search) {
+        this.search(loading, search, this);
+      }
+    },
+    search(loading, search /*, vm*/) {
+      this.getAllCategories(search);
+    },
+    getAllCategories(search) {
+      HTTP.get("categorySearch?name=" + search)
+              .then(res => {
+                this.categories = res.data;
+              })
+              .catch(() => {
+                console.log("handle server error from here");
+              });
+    },
+    getCategory() {
+      HTTP.get(CATEGORIES_API + "/" + this.clickedCompany.category.id)
+              .then(res => {
+                console.log(res);
+
+                this.oldCategory = res.data.data[0];
+              })
+              .catch(() => {
+                console.log("handle server error from here");
+              });
+    },
     getCompany() {
       this.isLoading = true;
       HTTP.get(COMPANIES_API + "/" + this.$route.params.id)
         .then(res => {
           console.log(res);
 
-          this.clickedCompany = res.data.data;
+          this.clickedCompany = res.data.data[0];
+          this.getCategory();
+          this.clickedCompany.category.id = this.oldCategory.id;
           this.isLoading = false;
         })
         .catch(() => {
@@ -185,6 +277,9 @@ export default {
 
     updateCompany() {
       console.log(this.clickedCompany);
+      if(this.clickedCompany.category.id===""){
+        this.clickedCompany.category.id = this.oldCategory.id;
+      }
       HTTP.put(COMPANIES_API + "/" + this.$route.params.id, this.clickedCompany)
         .then(res => {
           this.$swal.fire({

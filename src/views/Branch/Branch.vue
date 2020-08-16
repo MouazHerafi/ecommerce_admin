@@ -87,19 +87,51 @@
         </div>
 
         <div class="form-group">
+          <label>رقم الهاتف</label>
+          <input
+                  id="phone"
+                  v-model="clickedBranch.phone"
+                  class="form-control"
+                  :class="{
+              'error-feild': isSubmitted && $v.clickedBranch.phone.$error
+            }"
+          />
+          <div
+                  v-if="isSubmitted && !$v.clickedBranch.phone.required"
+                  class="invalid-feedback"
+          >
+            {{ msg_req }}
+          </div>
+          <div
+                  v-for="(error, i) in errors.phone"
+                  :key="i"
+                  class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>الموظف الحالي</label>
+          <input
+                  disabled
+                  class="form-control"
+                  type="text"
+                  v-model="oldUser.email"
+          />
+        </div>
+
+        <div class="form-group">
           <div class="style-chooser">
             <v-select
               dir="rtl"
               label="email"
               :filterable="false"
               :options="users.data"
-              v-model="clickedBranch.user_id"
-              placeholder="اختر موظف لهذا الفرع"
+              v-model="clickedBranch.user"
+              placeholder="اختر موظف إذا كنت ترغب بتغييره"
               :reduce="username => username.id"
               @search="onSearch"
-              :class="{
-                'error-feild': isSubmitted && $v.clickedBranch.user_id.$error
-              }"
             >
               <template slot="no-options">
                 ابحث عن الموظف المطلوب..
@@ -117,13 +149,7 @@
             </v-select>
           </div>
           <div
-            v-if="isSubmitted && !$v.clickedBranch.user_id.required"
-            class="invalid-feedback"
-          >
-            {{ msg_req }}
-          </div>
-          <div
-            v-for="(error, i) in errors.user_id"
+            v-for="(error, i) in errors.user"
             :key="i"
             class="invalid-feedback"
           >
@@ -165,7 +191,7 @@
 
 <script>
 import { minLength, required } from "vuelidate/lib/validators";
-import localVar, { BRANCHES_API } from "../../LocalVar";
+import localVar, {BRANCHES_API, USERS_API} from "../../LocalVar";
 import { HTTP } from "../../http-common";
 
 export default {
@@ -182,24 +208,29 @@ export default {
       clickedBranch: {
         name: "",
         location: "",
-        //email: "",
-        //phone: "",
-        company_id: Number.parseInt(this.$route.params.id, 10),
-        user_id: undefined
+        phone: "",
+        company: "",
+        user: undefined
+      },
+      oldUser: {
+        name: "",
+        email: "",
+        id: ""
       },
       isSubmitted: false,
       errors: {
         name: [],
         location: [],
-        user_id: []
+        user: [],
+        phone: []
       },
       msg_req: localVar.get_msg_req(),
       msg_min_length: localVar.get_msg_min_length(4),
       isLoading: false
     };
   },
-  mounted() {
-    this.getBranch();
+  async mounted() {
+    await this.getBranch();
   },
   validations: {
     clickedBranch: {
@@ -208,9 +239,10 @@ export default {
         minLength: minLength(4)
       },
       location: {
-        required
+        required,
+        minLength: minLength(4)
       },
-      user_id: {
+      phone: {
         required
       }
     }
@@ -222,10 +254,22 @@ export default {
       }
     },
     search(loading, search /*, vm*/) {
-      this.getAllUser(escape(search));
+      this.getAllUser(search);
+    },
+    getUser() {
+      HTTP
+              .get(USERS_API + "/" + this.clickedBranch.user)
+              .then(res => {
+                console.log(res);
+
+                this.oldUser = res.data.data[0];
+              })
+              .catch(() => {
+                console.log("handle server error from here");
+              });
     },
     getAllUser(search) {
-      HTTP.get("v1/employeeSearchEmail?email=" + search)
+      HTTP.get("employeeSearchEmail?email=" + search)
         .then(res => {
           console.log(res);
 
@@ -256,21 +300,26 @@ export default {
       });
     },
     getBranch() {
-      console.log(this.$route.params.branchID);
       this.isLoading = true;
       HTTP.get(BRANCHES_API + "/" + this.$route.params.branchID)
         .then(res => {
           console.log(res);
 
-          this.clickedBranch = res.data.data;
+          this.clickedBranch = res.data.data[0];
           this.isLoading = false;
+          this.getUser();
+          this.clickedBranch.user = this.oldUser.id;
         })
         .catch(() => {
           console.log("handle server error from here");
         });
+
     },
     updateBranch() {
-      console.log(this.clickedBranch);
+      console.log(this.clickedBranch)
+      if(this.clickedBranch.user===""){
+        this.clickedBranch.user = this.oldUser.id;
+      }
       HTTP.put(
         BRANCHES_API + "/" + this.$route.params.branchID,
         this.clickedBranch

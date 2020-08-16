@@ -20,7 +20,7 @@
             <button type="submit" class="btn light-btn">بحث</button>
           </span>
         </span>
-       <!-- <span v-if="!notFoundBranches" class="float-right">
+        <!-- <span v-if="!notFoundBranches" class="float-right">
           <span class="input-group">
             <div>لا يوجد أفرع لهذه الشركة</div>
           </span>
@@ -96,9 +96,9 @@
             <th>الاسم</th>
             <th class="hidden-sm-down">العنوان</th>
             <th class="hidden-sm-down">الموظف</th>
-            <th class="hidden-sm-down">الرصيد</th>
-            <th>المنتجات</th>
-            <th>إدارة الصفات</th>
+            <th class="hidden-sm-down">رقم الهاتف</th>
+            <th class="hidden-sm-down">المنتجات</th>
+            <th class="hidden-sm-down">إدارة الصفات</th>
             <th></th>
             <th></th>
           </tr>
@@ -111,13 +111,13 @@
             </td>
             <td class="hidden-sm-down">{{ branch.location }}</td>
             <td class="hidden-sm-down">{{ branch.user.username }}</td>
-            <td class="hidden-sm-down">{{ branch.balance }}</td>
-            <td>
+            <td class="hidden-sm-down">{{ branch.phone }}</td>
+            <td class="hidden-sm-down">
               <a @click="showProducts(branch.id)" class="btn btn-sm linkGo"
                 ><i class="material-icons">keyboard_arrow_left</i></a
               >
             </td>
-            <td>
+            <td class="hidden-sm-down">
               <a @click="ManageAttributes(branch.id)" class="btn btn-sm linkGo"
                 ><i class="material-icons">keyboard_arrow_left</i></a
               >
@@ -131,9 +131,10 @@
               >
             </td>
             <td>
-              <a @click="deleteBranch(branch.id)"
-                 class="btn btn-sm delete"
-                 title="Delete"
+              <a
+                @click="deleteBranch(branch.id)"
+                class="btn btn-sm delete"
+                title="Delete"
                 ><i class="material-icons">&#xE872;</i></a
               >
             </td>
@@ -141,9 +142,13 @@
         </tbody>
       </table>
 
-      <Pagination v-if="!isLoading" :pagination="branches" @paginate="getAllBranch()" :offset="4">
+      <Pagination
+        v-if="!isLoading"
+        :pagination="branches"
+        @paginate="getAllBranch()"
+        :offset="4"
+      >
       </Pagination>
-
     </div>
   </div>
 </template>
@@ -152,7 +157,7 @@
 import { HTTP } from "../../http-common";
 // import localVar from "../../LocalVar";
 //import { BRANCHES_API } from "../../LocalVar";
-import {BRANCHES_API, COMPANIES_API} from "../../LocalVar";
+import {BRANCHES_API, BRANCHESBYCOMPANY_API, COMPANIES_API} from "../../LocalVar";
 import Pagination from "../../components/Pagination/Pagination.vue";
 import { ContentLoader } from "vue-content-loader";
 export default {
@@ -194,10 +199,13 @@ export default {
   },
   methods: {
     getCompany() {
-      HTTP.get(COMPANIES_API + "/" + this.$route.params.id,this.branches.current_page)
+      HTTP.get(
+        COMPANIES_API + "/" + this.$route.params.id,
+        this.branches.current_page
+      )
         .then(res => {
           //console.log(res);
-          this.company = res.data.data;
+          this.company = res.data.data[0];
         })
         .catch(() => {
           console.log("handle server error from here");
@@ -209,19 +217,19 @@ export default {
     getAllBranch() {
       this.isLoading = true;
       HTTP.get(
-        COMPANIES_API +
+              BRANCHESBYCOMPANY_API +
           "/" +
           this.$route.params.id +
-          "/"+BRANCHES_API+"?page=" +
+          "?page=" +
           this.branches.current_page
       )
         .then(res => {
           console.log(res);
-          if (res.data.data != null) {
-            this.notFoundBranches = true;
-            //this.company = res.data.data[0].company;
+          if (res.data.data.length !== 0) {
             this.branches = res.data;
             this.isLoading = false;
+          }else {
+            this.$router.push({ name: "AddBranch" });
           }
         })
         .catch(() => {
@@ -229,34 +237,33 @@ export default {
         });
     },
     deleteBranch(branchID) {
-      this.$swal.fire({
-        title: 'هل أنت متأكد؟',
-        text: "سيتم حذف هذا الفرع!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        cancelButtonText: 'لا',
-        confirmButtonText: 'نعم, أريد حذفه'
-      }).then((result) => {
-        if (result.value) {
-          HTTP
-                  .delete(BRANCHES_API+ "/" + branchID)
-                  .then(res => {
-                    console.log(res);
-                    this.$swal.fire({
-                              icon: "success",
-                              title:'تم حذف الفرع بنجاح!'
-                            }
-                    )
-                    this.getAllBranch();
-                  })
-                  .catch(() => {
-                    console.log("handle server error from here");
-                  });
-        }
-      })
-
+      this.$swal
+        .fire({
+          title: "هل أنت متأكد؟",
+          text: "سيتم حذف هذا الفرع!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          cancelButtonText: "لا",
+          confirmButtonText: "نعم, أريد حذفه"
+        })
+        .then(result => {
+          if (result.value) {
+            HTTP.delete(BRANCHES_API + "/" + branchID)
+              .then(res => {
+                console.log(res);
+                this.$swal.fire({
+                  icon: "success",
+                  title: "تم حذف الفرع بنجاح!"
+                });
+                this.getAllBranch();
+              })
+              .catch(() => {
+                console.log("handle server error from here");
+              });
+          }
+        });
     },
     showBranch(branchID) {
       this.$router.push({ name: "Branch", params: { branchID: branchID } });

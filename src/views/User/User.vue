@@ -356,7 +356,7 @@ export default {
         .then(res => {
           console.log(res);
 
-          this.clickedUser = res.data.data;
+          this.clickedUser = res.data.data[0];
           this.isLoading = false;
         })
         .catch(() => {

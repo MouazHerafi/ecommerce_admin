@@ -4,12 +4,12 @@
     <ul class="breadcrumb custom-breadcrumb">
       <li class="breadcrumb-item"><a href="#">لوحتي</a></li>
       <li class="breadcrumb-item "><a href="#">لوحة التحكم</a></li>
-      <li class="breadcrumb-item active"><a href="#">الشركات</a></li>
+      <li class="breadcrumb-item active"><a href="#">الطلبات</a></li>
     </ul>
     <!-- نهاية قائمة التصفح العليا -->
     <div class="content-block">
       <h1>
-        <i class="fa fa-building block-icon" aria-hidden="true"></i>الشركات
+        <i class="fa fa-building block-icon" aria-hidden="true"></i>الطلبات
       </h1>
 
       <div class="table-op clearfix">
@@ -19,11 +19,14 @@
             <button type="submit" class="btn light-btn">بحث</button>
           </span>
         </span>
-        <router-link :to="{ name: 'AddCompany' }">
-          <button class="btn btn-primary mr-3 float-left">
-            إضافة شركة جديدة
-          </button>
-        </router-link>
+        <span v-if="!showLoader" class="float-left">
+          <label class="filter">فلترة حسب تاريخ الشراء</label>
+          <input
+            v-model="dateOrders"
+            v-on:input="filterOrdersByDate($event.target.value)"
+            type="date"
+          />
+        </span>
       </div>
 
       <ContentLoader
@@ -89,60 +92,45 @@
       <table v-if="!showLoader" class="table table-striped">
         <thead>
           <tr>
-            <th></th>
-            <th>الاسم</th>
-            <th class="hidden-sm-down">اختصاص الشركة</th>
-            <th class="hidden-sm-down">البريد الالكتروني</th>
-            <th class="hidden-sm-down">رقم الهاتف</th>
-            <th>أفرع الشركة</th>
-            <th></th>
-            <th></th>
+            <th>الزبون</th>
+            <th>الشركة</th>
+            <th>الفرع</th>
+            <th>تاريخ الشراء</th>
+            <th>الاجمالي</th>
+            <th>تفاصيل الطلب</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr v-for="(company, i) in companies.data" :key="i">
+          <tr v-for="(order, i) in orders.data" :key="i">
             <td>
-              <img
-                    class="custom-file-upload-image"
-                    :src=[company.logo]
-                    alt=""
-            />
+              <a>mouaz herafi</a>
             </td>
             <td>
-              <a>{{ company.name }}</a>
+              <a>{{ order.branch.company }}</a>
             </td>
-            <td class="hidden-sm-down">{{company.category.name}}</td>
-            <td class="hidden-sm-down">company@gmail.com</td>
-            <td class="hidden-sm-down">{{ company.phone }}</td>
             <td>
-              <a @click="showBranches(company.id)" class="btn btn-sm linkGo"
+              <a>{{ order.branch.name }}</a>
+            </td>
+            <td>
+              <a>{{ order.date }}</a>
+            </td>
+            <td>
+              <a>{{ order.delevareAmount }}</a>
+            </td>
+            <td>
+              <a @click="showOrderDetails(order.id)" class="btn btn-sm linkGo"
                 ><i class="material-icons md-24">menu_open</i></a
-              >
-            </td>
-            <td>
-              <a
-                @click="showCompany(company.id)"
-                title="Edit"
-                class="btn btn-sm edit"
-                ><i class="material-icons">&#xE254;</i></a
-              >
-            </td>
-            <td>
-              <a
-                @click="deleteCompany(company.id)"
-                class="btn btn-sm delete"
-                title="Delete"
-                ><i class="material-icons">&#xE872;</i></a
               >
             </td>
           </tr>
         </tbody>
       </table>
 
-      <Pagination v-if="!showLoader"
-        :pagination="companies"
-        @paginate="getAllCompany()"
+      <Pagination
+        v-if="!showLoader"
+        :pagination="orders"
+        @paginate="getAllOrder()"
         :offset="4"
       >
       </Pagination>
@@ -151,23 +139,15 @@
 </template>
 
 <script>
-  import {COMPANIES_API} from "../../LocalVar";
 import { ContentLoader } from "vue-content-loader";
 import Pagination from "../../components/Pagination/Pagination.vue";
-  import {HTTP} from "../../http-common";
 export default {
-  name: "Companies",
+  name: "Orders",
   data() {
     return {
-     /* companies: {
-        total: 0,
-        per_page: 2,
-        from: 1,
-        to: 0,
-        current_page: 1
-      },*/
       offset: 4,
-      isLoading: false
+      isLoading: false,
+      dateOrders: ""
     };
   },
   components: {
@@ -175,69 +155,37 @@ export default {
     ContentLoader
   },
   async mounted() {
-    await this.getAllCompany();
+    this.dateOrders = new Date()
+      .toJSON()
+      .slice(0, 10)
+      .replace(/-/g, "-");
+    await this.getAllOrder(this.dateOrders);
   },
   computed: {
-    companies () {
-      return this.$store.getters.allCompanies;
+    orders() {
+      return this.$store.getters.allOrders;
     },
     showLoader() {
       return this.$store.getters.showLoader;
     }
   },
   methods: {
-    getAllCompany() {
-      this.$store.dispatch('allCompanies',this.companies.current_page);
+    getAllOrder(date) {
+      let page = this.orders.current_page;
+      this.$store.dispatch("allOrders", { page, date });
     },
-    /*getAllCompany() {
-      this.isLoading = true;
-      HTTP.get(COMPANIES_API + "?page=" + this.companies.current_page)
-        .then(res => {
-          console.log(res);
-
-          this.companies = res.data;
-          this.isLoading = false;
-        })
-        .catch(() => {
-          console.log("handle server error from here");
-        });
-    },*/
-    showCompany(companyID) {
-      this.$router.push({ name: "Company", params: { id: companyID } });
+    filterOrdersByDate(v) {
+      this.getAllOrder(v);
     },
-    showBranches(companyID) {
-      this.$router.push({ name: "Branches", params: { id: companyID } });
-    },
-    deleteCompany(companyID) {
-      this.$swal.fire({
-        title: 'هل أنت متأكد؟',
-        text: "سيتم حذف هذه الشركة!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        cancelButtonText: 'لا',
-        confirmButtonText: 'نعم, أريد حذفه'
-      }).then((result) => {
-        if (result.value) {
-          HTTP
-                  .delete(COMPANIES_API+ "/" + companyID)
-                  .then(res => {
-                    console.log(res);
-                    this.$swal.fire({
-                      icon: "success",
-                      title:'تم حذف الشركة بنجاح!'
-                    }
-                    )
-                    this.getAllCompany();
-                  })
-                  .catch(() => {
-                    console.log("handle server error from here");
-                  });
-        }
-      })
-
+    showOrderDetails(orderID) {
+      this.$router.push({ name: "Order", params: { OrderID: orderID } });
     }
   }
 };
 </script>
+
+<style scoped>
+.filter {
+  padding-left: 10px;
+}
+</style>

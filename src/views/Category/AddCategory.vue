@@ -4,12 +4,12 @@
     <ul class="breadcrumb custom-breadcrumb">
       <li class="breadcrumb-item"><a href="#">لوحتي</a></li>
       <li class="breadcrumb-item "><a href="#">لوحة التحكم</a></li>
-      <li class="breadcrumb-item active"><a href="#">إضافة فئة جديدة</a></li>
+      <li class="breadcrumb-item active"><a href="#">إضافة صنف جديد</a></li>
     </ul>
     <!-- نهاية قائمة التصفح العليا -->
     <div class="content-block">
       <h1>
-        <i class="fa fa-plus block-icon" aria-hidden="true"></i>اضافة فئة جديد
+        <i class="fa fa-plus block-icon" aria-hidden="true"></i>اضافة صنف جديد
       </h1>
 
       <form
@@ -17,7 +17,7 @@
         class="custom-form user-profile-form d-flex flex-wrap"
       >
         <div class="form-group">
-          <label>اسم الفئة</label>
+          <label>اسم الصنف</label>
           <input
             class="form-control"
             v-model="newCategory.name"
@@ -47,6 +47,16 @@
             {{ error }}
           </div>
         </div>
+
+        <div class="form-group change-pass">
+          <p>هل هو صنف رئيسي؟</p>
+          <toggle-button
+                  v-model="isMainCategory"
+                  :labels="{ checked: 'لا', unchecked: 'نعم' }"
+                  :width="55"
+                  :height="25"
+          />
+        </div>
         <!--<div class="form-group">
           <label>التوصيف</label>
           <textarea
@@ -55,7 +65,7 @@
             title="cat-details"
           ></textarea>
         </div>-->
-        <div class="form-group">
+        <div v-if="!isMainCategory" class="form-group">
           <div class="style-chooser">
             <v-select
               dir="rtl"
@@ -63,15 +73,12 @@
               :filterable="false"
               :options="categories.data"
               v-model="newCategory.parent_id"
-              placeholder="اختر مستوى لهذه الفئة"
+              placeholder="اختر مستوى لهذا الصنف"
               :reduce="name => name.id"
               @search="onSearch"
-              :class="{
-                'error-feild': isSubmitted && $v.newCategory.parent_id.$error
-              }"
             >
               <template slot="no-options">
-                ابحث عن الفئة المطلوبة..
+                ابحث عن الصنف المطلوب..
               </template>
               <template slot="category" slot-scope="category">
                 <div class="d-center">
@@ -84,12 +91,6 @@
                 </div>
               </template>
             </v-select>
-          </div>
-          <div
-            v-if="isSubmitted && !$v.newCategory.parent_id.required"
-            class="invalid-feedback"
-          >
-            {{ msg_req }}
           </div>
           <div
             v-for="(error, i) in errors.parent_id"
@@ -128,8 +129,9 @@ export default {
       newCategory: {
         name: "",
         //description: "",
-        parent_id: ""
+        parent_id: "null"
       },
+      isMainCategory: true,
       isSubmitted: false,
       errors: {
         name: [],
@@ -144,9 +146,6 @@ export default {
       name: {
         required,
         minLength: minLength(4)
-      },
-      parent_id: {
-        required
       }
     }
   },
@@ -177,7 +176,7 @@ export default {
       }
     },
     search(loading, search /*, vm*/) {
-      this.getAllCategories(escape(search));
+      this.getAllCategories(search);
     },
     getAllCategories(search) {
       HTTP.get("categorySearch?name=" + search)

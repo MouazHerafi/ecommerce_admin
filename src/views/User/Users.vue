@@ -4,13 +4,13 @@
     <ul class="breadcrumb custom-breadcrumb">
       <li class="breadcrumb-item"><a href="#">لوحتي</a></li>
       <li class="breadcrumb-item "><a href="#">لوحة التحكم</a></li>
-      <li class="breadcrumb-item active"><a href="#">المستخدمون</a></li>
+      <li class="breadcrumb-item active"><a href="#">الموظفين</a></li>
     </ul>
     <!-- نهاية قائمة التصفح العليا -->
 
     <div class="content-block">
       <h1>
-        <i class="fa fa-users block-icon" aria-hidden="true"></i>المستخدمون
+        <i class="fa fa-users block-icon" aria-hidden="true"></i>الموظفين
       </h1>
 
       <div class="table-op clearfix">
