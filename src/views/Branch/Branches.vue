@@ -200,7 +200,7 @@ export default {
   methods: {
     getCompany() {
       HTTP.get(
-        COMPANIES_API + "/" + this.$route.params.id,
+        COMPANIES_API + "/" + this.$route.params.companyID,
         this.branches.current_page
       )
         .then(res => {
@@ -219,7 +219,7 @@ export default {
       HTTP.get(
               BRANCHESBYCOMPANY_API +
           "/" +
-          this.$route.params.id +
+          this.$route.params.companyID +
           "?page=" +
           this.branches.current_page
       )

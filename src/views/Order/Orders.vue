@@ -12,15 +12,17 @@
         <i class="fa fa-building block-icon" aria-hidden="true"></i>الطلبات
       </h1>
 
+
       <div class="table-op clearfix">
         <span v-if="!showLoader" class="float-right">
-          <span class="input-group">
-            <input title="search" type="text" required="required" />
-            <button type="submit" class="btn light-btn">بحث</button>
-          </span>
-        </span>
-        <span v-if="!showLoader" class="float-left">
-          <label class="filter">فلترة حسب تاريخ الشراء</label>
+                                <span class="input-group">
+                                <select v-model="typeFilter" v-on:input="filterOrders($event.target.value)" title="op">
+                                    <option value="all">عرض جميع الطلبات</option>
+                                    <option value="date">فلترة حسب تاريخ الشراء</option>
+                                </select>
+                              </span>
+                            </span>
+        <span v-if="!showLoader && typeFilter==='date'" class="float-left">
           <input
             v-model="dateOrders"
             v-on:input="filterOrdersByDate($event.target.value)"
@@ -92,7 +94,7 @@
       <table v-if="!showLoader" class="table table-striped">
         <thead>
           <tr>
-            <th>الزبون</th>
+            <th>الزبون الشاري</th>
             <th>الشركة</th>
             <th>الفرع</th>
             <th>تاريخ الشراء</th>
@@ -104,10 +106,10 @@
         <tbody>
           <tr v-for="(order, i) in orders.data" :key="i">
             <td>
-              <a>mouaz herafi</a>
+              <a>{{order.user.name}}</a>
             </td>
             <td>
-              <a>{{ order.branch.company }}</a>
+              <a>{{ order.branch.company.name }}</a>
             </td>
             <td>
               <a>{{ order.branch.name }}</a>
@@ -147,7 +149,8 @@ export default {
     return {
       offset: 4,
       isLoading: false,
-      dateOrders: ""
+      dateOrders: "",
+      typeFilter: "all"
     };
   },
   components: {
@@ -155,11 +158,11 @@ export default {
     ContentLoader
   },
   async mounted() {
-    this.dateOrders = new Date()
+    /*this.dateOrders = new Date()
       .toJSON()
       .slice(0, 10)
-      .replace(/-/g, "-");
-    await this.getAllOrder(this.dateOrders);
+      .replace(/-/g, "-");*/
+    await this.getAllOrder(null);
   },
   computed: {
     orders() {
@@ -176,6 +179,11 @@ export default {
     },
     filterOrdersByDate(v) {
       this.getAllOrder(v);
+    },
+    filterOrders(v){
+      if(v==="all"){
+        this.getAllOrder(null);
+      }
     },
     showOrderDetails(orderID) {
       this.$router.push({ name: "Order", params: { OrderID: orderID } });

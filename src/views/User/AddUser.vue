@@ -23,39 +23,6 @@
           <input
             id="name"
             name="name"
-            v-model="newUser.name"
-            class="form-control"
-            :class="{
-              'error-feild': isSubmitted && $v.newUser.name.$error
-            }"
-            type="text"
-          />
-          <div
-            v-if="isSubmitted && !$v.newUser.name.required"
-            class="invalid-feedback"
-          >
-            {{ msg_req }}
-          </div>
-          <div
-            v-if="isSubmitted && !$v.newUser.name.minLength"
-            class="invalid-feedback"
-          >
-            {{ msg_min_length }}
-          </div>
-          <div
-            v-for="(error, i) in errors.name"
-            :key="i"
-            class="invalid-feedback"
-          >
-            {{ error }}
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>الاسم الكامل للمستخدم</label>
-          <input
-            id="username"
-            name="username"
             v-model="newUser.username"
             class="form-control"
             :class="{
@@ -77,6 +44,39 @@
           </div>
           <div
             v-for="(error, i) in errors.username"
+            :key="i"
+            class="invalid-feedback"
+          >
+            {{ error }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>الاسم الكامل للمستخدم</label>
+          <input
+            id="username"
+            name="username"
+            v-model="newUser.name"
+            class="form-control"
+            :class="{
+              'error-feild': isSubmitted && $v.newUser.name.$error
+            }"
+            type="text"
+          />
+          <div
+            v-if="isSubmitted && !$v.newUser.name.required"
+            class="invalid-feedback"
+          >
+            {{ msg_req }}
+          </div>
+          <div
+            v-if="isSubmitted && !$v.newUser.name.minLength"
+            class="invalid-feedback"
+          >
+            {{ msg_min_length }}
+          </div>
+          <div
+            v-for="(error, i) in errors.name"
             :key="i"
             class="invalid-feedback"
           >
@@ -262,7 +262,7 @@ export default {
       msg_req: localVar.get_msg_req(),
       msg_email: localVar.get_msg_email(),
       msg_password_match: localVar.get_msg_password_match(),
-      msg_min_length: localVar.get_msg_min_length(4),
+      msg_min_length: localVar.get_msg_min_length(5),
       newUser: {
         name: "",
         username: "",
@@ -289,11 +289,11 @@ export default {
     newUser: {
       name: {
         required,
-        minLength: minLength(4)
+        minLength: minLength(5)
       },
       username: {
         required,
-        minLength: minLength(4)
+        minLength: minLength(5)
       },
       email: {
         required,

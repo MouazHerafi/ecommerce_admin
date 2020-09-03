@@ -69,7 +69,7 @@ const routes = [
             component: AddUser
           },
           {
-            path: ":id",
+            path: ":userID",
             meta: {
               label: "User Details"
             },
@@ -156,7 +156,7 @@ const routes = [
             component: AddCompany
           },
           {
-            path: ":id",
+            path: ":companyID",
             meta: {
               label: "Company Details"
             },
@@ -164,12 +164,12 @@ const routes = [
             component: Company
           },
           {
-            path: ":id/branches/",
+            path: ":companyID/branches/",
             name: "Branches",
             component: Branches
           },
           {
-            path: ":id/branches/add",
+            path: ":companyID/branches/add",
             meta: {
               label: "Add Branch"
             },

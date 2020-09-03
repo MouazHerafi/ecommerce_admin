@@ -12,6 +12,9 @@
       :is-full-page="false"
       color="#ef3e58"
     ></loading>
+    <h1>
+      <i class="fa fa-building block-icon" aria-hidden="true"></i>تاريخ الطلب : {{clickedOrder.date}}
+    </h1>
     <!-- نهاية قائمة التصفح العليا -->
     <div v-if="clickedOrder.products.length != 0" class="content-block">
       <h3>

@@ -1,5 +1,6 @@
 <template>
   <div class="admin">
+
     <!-- الشريط العلوي-->
       <nav class="navbar navbar-style">
         <div class="container">
@@ -8,57 +9,35 @@
                      class="fa fa-bars" id="open-button"></a>
           <div class="navbar-brand p-0">
             <a href="/"><img src="/images/logo.png" alt="لوحتي"/></a>
-            <!--<ul class="float-left p-0 m-0 list-unstyled d-flex flex-row">
-              <router-link to="/" tag="li">
-                <a>الرئيسية</a>
-              </router-link>
-              <router-link to="/companies" tag="li">
-                <a>الشركات</a>
-              </router-link>
-              <router-link to="/users" tag="li">
-                <a>الموظفين</a>
-              </router-link>
-              <router-link to="/categories" tag="li">
-                <a>الفئات</a>
-              </router-link>
-              <li>
-                <a href="#">الزبائن</a>
-              </li>
-              <li>
-                <a href="#">الطلبات</a>
-              </li>
-              <li>
-                <a href="#">البطاقات</a>
-              </li>
-                <router-link to="/coupons" tag="li">
-                    <a>الحسومات</a>
-                </router-link>
 
-            </ul>-->
           </div>
 
           <ul class="float-left p-0 m-0 list-unstyled d-flex flex-row">
+            <router-link to="/companies">
             <li>
-              <a href="#">
-                <span class="text-center menu-notification">+9</span>
-                <i class="fa fa-bell" aria-hidden="true"></i>
+              <a href="#">المستحقات</a>
+            </li>
+            </router-link>
+            <router-link to="/companies">
+            <li>
+              <a href="#">الدفعات</a>
+            </li>
+            </router-link>
+            <li>
+              <a data-toggle="modal"
+                 data-target="#queryCard" href="">
+                <i class="fa fa-id-card " aria-hidden="true"></i>
               </a>
             </li>
-            <li>
-              <a href="#"><i class="fa fa-envelope" aria-hidden="true"></i></a>
-            </li>
+
             <li>
               <div class="dropdown user-dropdown">
                 <a href="#" data-toggle="dropdown" id="dropdownMenuButton">
                   <img alt="" class="user-thumb" src="/images/user.png" />
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item" href="#"
-                    ><i class="fa fa-user"></i>عبد السلام حلاوة</a
-                  >
                   <button class="dropdown-item" @click="logoutNow()"
-                    ><i class="fa fa-lock"></i>تسجيل الخروج</button
-                  >
+                    ><i class="fa fa-lock"></i>تسجيل الخروج</button>
                 </div>
               </div>
             </li>
@@ -99,11 +78,64 @@
 
 
             </ul>
+
+
         </div>
 
 
+    <div
+            class="modal fade "
+            id="queryCard"
+            tabindex="-1"
+            role="dialog"
+            aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">استعلام عن رصيد بطاقة</h5>
+            <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>رقم البطاقة</label>
+              <input
+                      id="code"
+                      v-model="numberCard"
+                      class="form-control"
+                      type="text"
+              />
+            </div>
+            <div class="form-group">
+              <label>الرصيد المتوفر</label>
+              <input
+                      id="money"
+                      disabled
+                      v-model="availableMoneyCard"
+                      class="form-control"
+                      type="text"
+              />
+            </div>
+            <div class="form-group">
+              <button class="btn btn-primary">
+                استعلام
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
         <!-- نهائة القائمة الجانبية -->
   </div>
+
   <!-- نهاية الشريط العلوي-->
 </template>
 
@@ -115,8 +147,9 @@ export default {
   name: "AppHeader",
   data: function(){
     return{
-      isOpen: false
-
+      isOpen: false,
+      numberCard:"",
+      availableMoneyCard:""
     }
 
 

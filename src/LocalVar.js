@@ -13,7 +13,7 @@ export const CATEGORIES_API = "categories";
 export const ORDERS_API = "orders";
 export const ATTRIBUTESBRANCH_API = "showAttributeBranch";
 export const SYNCATTRIBUTES_API =  "syncAttributes";
-export const CARDS_API = "cards";
+export const CARDS_API = "deposit";
 export default {
   get_api_address() {
     return "http://localhost:8000/api/v1/";

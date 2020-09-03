@@ -1,6 +1,6 @@
 import axios from "axios";
 import router from "./router";
-const IP = "http://localhost";
+const IP = "http://10.65.1.109";
 const PORT = "8000";
 //const token = localStorage.getItem("token");
 // eslint-disable-next-line no-unused-vars

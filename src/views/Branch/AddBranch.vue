@@ -65,12 +65,6 @@
             {{ msg_req }}
           </div>
           <div
-            v-if="isSubmitted && !$v.newBranch.location.minLength"
-            class="invalid-feedback"
-          >
-            {{ msg_min_length }}
-          </div>
-          <div
             v-for="(error, i) in errors.location"
             :key="i"
             class="invalid-feedback"
@@ -200,7 +194,7 @@ export default {
         location: "",
         //email: "",
         phone: "",
-        company_id: Number.parseInt(this.$route.params.id, 10),
+        company_id: Number.parseInt(this.$route.params.companyID, 10),
         user_id: undefined
       },
       isSubmitted: false,
@@ -287,6 +281,7 @@ export default {
           this.$router.push({ name: "Branches" });
         })
         .catch(error => {
+          this.errors = error.data.errors;
           console.log(error);
           console.log("handle server error from here");
         });

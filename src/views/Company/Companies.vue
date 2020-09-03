@@ -203,10 +203,10 @@ export default {
         });
     },*/
     showCompany(companyID) {
-      this.$router.push({ name: "Company", params: { id: companyID } });
+      this.$router.push({ name: "Company", params: { companyID: companyID } });
     },
     showBranches(companyID) {
-      this.$router.push({ name: "Branches", params: { id: companyID } });
+      this.$router.push({ name: "Branches", params: { companyID: companyID } });
     },
     deleteCompany(companyID) {
       this.$swal.fire({

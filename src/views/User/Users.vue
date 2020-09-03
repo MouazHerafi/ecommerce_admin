@@ -163,7 +163,7 @@ export default {
     },
 
     rowClicked(userID) {
-      this.$router.push({ name: "User", params: { id: userID } });
+      this.$router.push({ name: "User", params: { userID: userID } });
     }
   }
 };

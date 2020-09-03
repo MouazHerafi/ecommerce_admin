@@ -335,7 +335,7 @@ export default {
           });
           console.log(res);
 
-          this.$router.push({ name: "Branches" });
+         // this.$router.push({ name: "Branches" });
         })
         .catch(() => {
           console.log("handle server error from here");

@@ -167,7 +167,7 @@
         </div>
 
 
-        <div class="form-group">
+        <!--<div class="form-group">
           <label>كلمة المرور</label>
           <input
             id="OldPassword"
@@ -191,7 +191,7 @@
           >
             {{ error }}
           </div>
-        </div>
+        </div>-->
 
 
         <div class="form-group change-pass">
@@ -286,7 +286,7 @@ export default {
         username: [],
         name: [],
         loaction: [],
-        password: [],
+       // password: [],
         newPassword: [],
         newPassword_confirmation: []
       },
@@ -314,9 +314,9 @@ export default {
       phone: {
         required
       },
-      password: {
+     /* password: {
         required
-      },
+      },*/
       newPassword: {
 
       },
@@ -352,7 +352,7 @@ export default {
       this.isLoading = true;
       //console.log("helooo  : " + this.$props.id);
       HTTP
-        .get(USERS_API + "/" + this.$route.params.id)
+        .get(USERS_API + "/" + this.$route.params.userID)
         .then(res => {
           console.log(res);
 
@@ -367,7 +367,7 @@ export default {
       console.log(this.clickedUser);
       HTTP
         .put(
-                USERS_API + "/" + this.$route.params.id,
+                USERS_API + "/" + this.$route.params.userID,
           this.clickedUser
         )
         .then(res => {

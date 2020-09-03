@@ -251,7 +251,7 @@ export default {
     getCategory() {
       HTTP.get(CATEGORIES_API + "/" + this.clickedCompany.category.id)
               .then(res => {
-                console.log(res);
+                //console.log(res);
 
                 this.oldCategory = res.data.data[0];
               })
@@ -261,9 +261,9 @@ export default {
     },
     getCompany() {
       this.isLoading = true;
-      HTTP.get(COMPANIES_API + "/" + this.$route.params.id)
+      HTTP.get(COMPANIES_API + "/" + this.$route.params.companyID)
         .then(res => {
-          console.log(res);
+          //console.log(res);
 
           this.clickedCompany = res.data.data[0];
           this.getCategory();
@@ -276,11 +276,16 @@ export default {
     },
 
     updateCompany() {
-      console.log(this.clickedCompany);
+      //console.log(this.clickedCompany);
       if(this.clickedCompany.category.id===""){
         this.clickedCompany.category.id = this.oldCategory.id;
       }
-      HTTP.put(COMPANIES_API + "/" + this.$route.params.id, this.clickedCompany)
+      let name = this.clickedCompany.name;
+      let phone = this.clickedCompany.phone;
+      let category_id = this.clickedCompany.category.id;
+      let data = {name,phone,category_id};
+      console.log(data);
+      HTTP.put(COMPANIES_API + "/" + this.$route.params.companyID, data)
         .then(res => {
           this.$swal.fire({
             icon: "success",

@@ -61,7 +61,7 @@
                 data-target="#myModal"
                 title="Charge"
                 class="btn btn-sm edit"
-                ><i class="material-icons">&#xE254;</i></a
+                ><i class="material-icons">credit_card</i></a
               >
             </td>
             <!--<td>
@@ -227,7 +227,7 @@ export default {
                 'متابعة <i class="fa fa-arrow-left"></i>',
       }).then((result) => {
         if (result.value) {
-          HTTP.put(CARDS_API +"/" + id, this.chargeCards)
+          HTTP.post(CARDS_API +"/" + id, this.chargeCards)
                   .then(res => {
                     this.$swal.fire({
                               icon: "success",
