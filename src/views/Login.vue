@@ -3,7 +3,7 @@
     <div class="container-login100">
       <div class="wrap-login100">
         <div class="login100-pic js-tilt" data-tilt>
-          <img src="/images/img-01.png" alt="IMG" />
+          <img src="/images/mylogo.jpg" alt="IMG" />
         </div>
 
         <form @submit.prevent="loginNow" class="login100-form">

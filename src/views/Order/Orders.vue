@@ -99,6 +99,7 @@
             <th>الفرع</th>
             <th>تاريخ الشراء</th>
             <th>الاجمالي</th>
+            <th>قيمة الحسم</th>
             <th>تفاصيل الطلب</th>
           </tr>
         </thead>
@@ -119,6 +120,9 @@
             </td>
             <td>
               <a>{{ order.delevareAmount }}</a>
+            </td>
+            <td>
+              <a>{{ order.discount }}</a>
             </td>
             <td>
               <a @click="showOrderDetails(order.id)" class="btn btn-sm linkGo"

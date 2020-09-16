@@ -8,12 +8,15 @@
                     @click="toggle"
                      class="fa fa-bars" id="open-button"></a>
           <div class="navbar-brand p-0">
-            <a href="/"><img src="/images/logo.png" alt="لوحتي"/></a>
+            <a href="/"><img src="/images/mylogo.jpg" alt="لوحتي" style="
+    width: 40px;
+    height: 40px;
+"/></a>
 
           </div>
 
           <ul class="float-left p-0 m-0 list-unstyled d-flex flex-row">
-            <router-link to="/companies">
+            <router-link to="/receivables">
             <li>
               <a href="#">المستحقات</a>
             </li>
@@ -90,6 +93,11 @@
             role="dialog"
             aria-hidden="true"
     >
+      <loading
+              :active.sync="isLoading"
+              :is-full-page="false"
+              color="#ef3e58"
+      ></loading>
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -108,7 +116,7 @@
               <label>رقم البطاقة</label>
               <input
                       id="code"
-                      v-model="numberCard"
+                      v-model="codeCard.code"
                       class="form-control"
                       type="text"
               />
@@ -124,7 +132,7 @@
               />
             </div>
             <div class="form-group">
-              <button class="btn btn-primary">
+              <button @click="getBalanceOfCard(codeCard)" class="btn btn-primary">
                 استعلام
               </button>
             </div>
@@ -148,8 +156,11 @@ export default {
   data: function(){
     return{
       isOpen: false,
-      numberCard:"",
-      availableMoneyCard:""
+      codeCard:{
+        code:""
+      },
+      availableMoneyCard:"",
+      isLoading: false
     }
 
 
@@ -182,7 +193,23 @@ export default {
 
               });
 
-    }
+    },
+    getBalanceOfCard(code) {
+      if(code!==""){
+        console.log(code);
+        this.isLoading = true;
+        HTTP.post(  "getCardByCode", code)
+                .then(res => {
+                  console.log(res);
+
+                  this.availableMoneyCard = res.data.data[0].balance;
+                  this.isLoading = false;
+                })
+                .catch(() => {
+                  console.log("handle server error from here");
+                });
+      }
+    },
 
 
   },

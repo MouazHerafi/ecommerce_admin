@@ -26,6 +26,7 @@ import ManageAttributes from "../views/Branch/ManageAttributes";
 import Customers from "../views/Customer/Customers";
 import Orders from "../views/Order/Orders";
 import Order from "../views/Order/Order";
+import ReceivablesToPay from "../views/Branch/ReceivablesToPay";
 
 Vue.use(VueRouter);
 
@@ -300,6 +301,14 @@ const routes = [
         },
         name: "NewAttribute",
         component: NewAttribute
+      },
+      {
+        path: "receivables",
+        meta: {
+          label: "Receivables"
+        },
+        name: "Receivables",
+        component: ReceivablesToPay
       }
     ]
   },

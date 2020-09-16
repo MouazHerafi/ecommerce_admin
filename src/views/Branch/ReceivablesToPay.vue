@@ -4,14 +4,10 @@
         <ul class="breadcrumb custom-breadcrumb">
             <li class="breadcrumb-item"><a href="#">لوحتي</a></li>
             <li class="breadcrumb-item "><a href="#">لوحة التحكم</a></li>
-            <li class="breadcrumb-item active"><a href="#">الأفرع</a></li>
+            <li class="breadcrumb-item active"><a href="#">المستحقات</a></li>
         </ul>
         <!-- نهاية قائمة التصفح العليا -->
         <div class="content-block">
-            <h1>
-                <i class="fa fa-university block-icon" aria-hidden="true"></i
-                >{{ company.name }}
-            </h1>
 
             <div class="table-op clearfix">
         <span v-if="!isLoading" class="float-right">
@@ -20,16 +16,6 @@
             <button type="submit" class="btn light-btn">بحث</button>
           </span>
         </span>
-                <!-- <span v-if="!notFoundBranches" class="float-right">
-                  <span class="input-group">
-                    <div>لا يوجد أفرع لهذه الشركة</div>
-                  </span>
-                </span>-->
-                <router-link :to="{ name: 'AddBranch' }">
-                    <button class="btn btn-primary mr-3 float-left">
-                        إضافة فرع جديد
-                    </button>
-                </router-link>
             </div>
             <ContentLoader
                     v-if="isLoading"
@@ -104,13 +90,13 @@
                 <tbody>
                 <tr v-for="(branch, i) in branches.data" :key="i">
                     <td>
-                        <a>{{ branch.name }}</a>
+                        <a>{{ branch.company.name }}</a>
                     </td>
                     <td>
                         <a>{{ branch.name }}</a>
                     </td>
-                    <td class="hidden-sm-down">{{ branch.user.username }}</td>
-                    <td>{{ branch.location }}</td>
+                    <td class="hidden-sm-down">{{ branch.user.name }}</td>
+                    <td>{{ branch.balance }}</td>
                 </tr>
                 </tbody>
             </table>
@@ -118,7 +104,7 @@
             <Pagination
                     v-if="!isLoading"
                     :pagination="branches"
-                    @paginate="getAllBranch()"
+                    @paginate="getAllBranchToPay()"
                     :offset="4"
             >
             </Pagination>
@@ -130,7 +116,7 @@
     import Pagination from "../../components/Pagination/Pagination";
     import {ContentLoader} from "vue-content-loader";
     import {HTTP} from "../../http-common";
-    import {BRANCHESBYCOMPANY_API} from "../../LocalVar";
+    import {RECEIVABLETOPAY_API} from "../../LocalVar";
 
     export default {
         name: "ReceivablesToPay",
@@ -152,15 +138,13 @@
             ContentLoader
         },
         async mounted() {
-            await this.getAllBranch();
+            await this.getAllBranchToPay();
         },
         methods: {
-            getAllBranch() {
+            getAllBranchToPay() {
                 this.isLoading = true;
                 HTTP.get(
-                    BRANCHESBYCOMPANY_API +
-                    "/" +
-                    this.$route.params.companyID +
+                    RECEIVABLETOPAY_API +
                     "?page=" +
                     this.branches.current_page
                 )
@@ -169,8 +153,6 @@
                         if (res.data.data.length !== 0) {
                             this.branches = res.data;
                             this.isLoading = false;
-                        }else {
-                            this.$router.push({ name: "AddBranch" });
                         }
                     })
                     .catch(() => {

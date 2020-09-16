@@ -65,7 +65,7 @@
         </tbody>
       </table>
     </div>
-    <div class="content-block">
+    <div v-if="clickedOrder.products.length != 0" class="content-block">
       <h3>
         <i class="fa fa-bar-chart block-icon" aria-hidden="true"></i>العروض
       </h3>
@@ -114,7 +114,7 @@
       </table>
     </div>
 
-    <div class="content-block">
+    <div v-if="clickedOrder.products.length != 0" class="content-block">
       <h3>
         <i class="fa fa-bar-chart block-icon" aria-hidden="true"></i>المجموع
         االنهائي

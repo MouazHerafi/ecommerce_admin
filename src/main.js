@@ -29,10 +29,20 @@ Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
 
 router.beforeEach((to, from, next) => {
-  next();
+ // next();
   var token = localStorage.getItem("token");
   HTTP.defaults.headers.common["Authorization"] = token;
   HTTP.defaults.headers.common["X-localization"] = "ar";
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!token) {
+      router.replace({
+        path: "/pages/login"
+        //query: { redirect: router.currentRoute.fullPath }
+      });
+    }else {next();}
+  }else {
+    next();
+  }
   /*if (to.matched.some(record => record.meta.requiresAuth)) {
     if (token) {
       HTTP.get("checkToken").then(res => {

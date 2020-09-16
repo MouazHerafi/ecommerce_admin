@@ -84,15 +84,14 @@
         <!--نهاية عنصر احصائيات الزوار والطلبات-->
 
         <div class="row">
-          <!--عنصر احصائيات المنتجات-->
-          <div class="col-md-6">
+          <!--<div class="col-md-6">
             <div class="content-block">
               <div class="title">
                 <i class="fa fa-bar-chart block-icon" aria-hidden="true"></i
                 >احصائيات المنتجات
               </div>
 
-              <!-- Nav tabs -->
+
               <ul class="nav p-0 mt-3 justify-content-center" role="tablist">
                 <li class="nav-item">
                   <a
@@ -114,7 +113,7 @@
                 </li>
               </ul>
 
-              <!-- Tab panes -->
+
               <div class="tab-content products-statics">
                 <div class="tab-pane active" id="most-wanted" role="tabpanel">
                   <div class="tab-head">
@@ -356,11 +355,11 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div>-->
           <!--نهاية عنصر احصائيات المنتجات-->
 
           <!--عنصر آخر الطلبات-->
-          <div class="col-md-6">
+          <!--<div class="col-md-6">
             <div id="last-orders-block" class="content-block">
               <div class="title">
                 <i class="fa fa-bar-chart block-icon" aria-hidden="true"></i>آخر
@@ -603,7 +602,7 @@
                 </ul>
               </div>
             </div>
-          </div>
+          </div>-->
           <!--نهاية عنصر آخر الطلبات-->
         </div>
       </div>
@@ -628,7 +627,7 @@
 
           <div class="col-lg-12 col-md-6">
             <div class="row">
-              <div class="col-12">
+              <!--<div class="col-12">
                 <div class="content-block comments">
                   <div class="title">
                     <i class="fa fa-comment block-icon" aria-hidden="true"></i
@@ -638,9 +637,9 @@
                   <div class="number">663</div>
                   <a class="btn custom-btn" href="#">مشاهدة التعليقات</a>
                 </div>
-              </div>
+              </div>-->
 
-              <div class="col-12">
+              <!--<div class="col-12">
                 <div class="content-block tasks-block">
                   <div class="title">
                     <i class="fa fa-comment block-icon" aria-hidden="true"></i
@@ -706,7 +705,7 @@
                     </li>
                   </ul>
                 </div>
-              </div>
+              </div>-->
             </div>
           </div>
         </div>
