@@ -63,6 +63,8 @@
 
       </table>-->
       <!--<tree v-for="(category, i) in categories.data" :key="i" :tree-data="category" @edit="editCategory" />-->
+
+
       <div v-if="!showLoader" class="list-group">
         <tree
           v-for="(category, i) in categories.data"

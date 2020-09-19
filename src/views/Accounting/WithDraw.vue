@@ -4,31 +4,26 @@
     <ul class="breadcrumb custom-breadcrumb">
       <li class="breadcrumb-item"><a href="#">لوحتي</a></li>
       <li class="breadcrumb-item "><a href="#">لوحة التحكم</a></li>
-      <li class="breadcrumb-item active"><a href="#">الموظفين</a></li>
+      <li class="breadcrumb-item active"><a href="#">عمليات الإيداع</a></li>
     </ul>
     <!-- نهاية قائمة التصفح العليا -->
-
     <div class="content-block">
-      <h1>
-        <i class="fa fa-users block-icon" aria-hidden="true"></i>الموظفين
-      </h1>
 
       <div class="table-op clearfix">
-        <span v-if="!showLoader" class="float-right">
+        <span v-if="!isLoading" class="float-right">
           <span class="input-group">
             <input title="search" type="text" required="required" />
             <button type="submit" class="btn light-btn">بحث</button>
           </span>
         </span>
-        <router-link :to="{ name: 'AddUser' }">
+        <router-link :to="{ name: 'NewWithDraw' }">
           <button class="btn btn-primary mr-3 float-left">
-            <i class="material-icons">person_add</i>
+            عملية سحب جديدة
           </button>
         </router-link>
       </div>
-
       <ContentLoader
-          v-if="showLoader"
+          v-if="isLoading"
           :height="500"
           :width="1000"
           :speed="2"
@@ -86,143 +81,102 @@
         <rect x="782" y="56" rx="3" ry="3" width="72" height="33" />
         <rect x="933" y="54" rx="3" ry="3" width="24" height="33" />
       </ContentLoader>
-
-      <table v-if="!showLoader" class="table table-striped">
+      <table v-if="!isLoading" class="table table-striped">
         <thead>
-          <tr>
-            <th>الاسم</th>
-            <th class="hidden-sm-down">البريد الالكتروني</th>
-            <th class="hidden-sm-down">رقم الهاتف</th>
-            <th>الاسم الكامل</th>
-            <th class="hidden-sm-down">العنوان</th>
-            <th></th>
-            <th></th>
-          </tr>
+        <tr>
+          <th>الفرع</th>
+          <th>الشركة</th>
+          <th>موظف الفرع</th>
+          <th>قيمة السحب</th>
+          <th>تاريخ السحب</th>
+          <th class="hidden-sm-down">المدير السؤول</th>
+        </tr>
         </thead>
 
         <tbody>
-          <tr v-for="(user, i) in users.data" :key="i">
-            <td>
-              <a>{{ user.name }}</a>
-            </td>
-            <td class="hidden-sm-down">{{ user.email }}</td>
-            <td class="hidden-sm-down">{{ user.phone }}</td>
-            <td>{{ user.username }}</td>
-            <td class="hidden-sm-down">{{ user.location }}</td>
-            <td>
-              <a
-                @click="rowClicked(user.id)"
-                title="Edit"
-                class="btn btn-sm edit"
-                ><i class="material-icons">&#xE254;</i></a
-              >
-            </td>
-            <td>
-              <a
-                @click="deleteUser(user.id)"
-                class="btn btn-sm delete"
-                title="Delete"
-                data-toggle="tooltip"
-                ><i class="material-icons">&#xE872;</i></a
-              >
-            </td>
-          </tr>
+        <tr v-for="(branch, i) in branches.data" :key="i">
+          <td>
+            <a>branch</a>
+          </td>
+          <td>
+            <a>company</a>
+          </td>
+          <td>
+            <a>employee</a>
+          </td>
+          <td>
+            <a>{{ branch.amount }}</a>
+          </td>
+          <td>
+            <a>{{ branch.withdrawDate }}</a>
+          </td>
+          <td class="hidden-sm-down">{{ branch.admin.name }}</td>
+        </tr>
         </tbody>
       </table>
-      <Pagination v-if="!showLoader" :pagination="users" @paginate="getAllUser()" :offset="4">
+
+      <Pagination
+          v-if="!isLoading"
+          :pagination="branches"
+          @paginate="getAllWithdraw()"
+          :offset="4"
+      >
       </Pagination>
     </div>
   </div>
-  <!-- نهائة محتويات الصفحة -->
 </template>
 
 <script>
-import { HTTP } from "../../http-common";
-import { USERS_API } from "../../LocalVar";
-import Pagination from "../../components/Pagination/Pagination.vue";
-import { ContentLoader } from "vue-content-loader";
+import Pagination from "@/components/Pagination/Pagination";
+import {ContentLoader} from "vue-content-loader";
+import {HTTP} from "@/http-common";
+import {WITHDRAW_API} from "@/LocalVar";
+
 export default {
+name: "WithDraw",
   data: function() {
     return {
-     /* users: {
+      branches: {
         total: 0,
         per_page: 2,
         from: 1,
         to: 0,
         current_page: 1
-      },*/
+      },
       offset: 4,
       isLoading: false
     };
   },
-  name: "Users",
   components: {
     Pagination,
     ContentLoader
   },
   async mounted() {
-    await this.getAllUser();
-  },
-  computed: {
-    users () {
-      return this.$store.getters.allUsers;
-    },
-    showLoader() {
-      return this.$store.getters.showLoader;
-    }
+    await this.getAllWithdraw();
   },
   methods: {
-    getAllUser() {
-      this.$store.dispatch('allEmployees',this.users.current_page);
-    },
-   /* getAllUser() {
+    getAllWithdraw() {
       this.isLoading = true;
-      HTTP.get(USERS_API + "?type=employee&page=" + this.users.current_page)
-        .then(res => {
-          console.log(res);
-
-          this.users = res.data;
-        })
-        /*.catch(error => {
-          console.log(error.response.data);
-          console.log("handle server error from here");
-        })*/
-      //  .finally(() => (this.isLoading = false));
-    //},*/
-    deleteUser(userID) {
-      this.$swal.fire({
-        title: 'هل أنت متأكد؟',
-        text: "سيتم حذف هذا الموظف!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        cancelButtonText: 'لا',
-        confirmButtonText: 'نعم, أريد حذفه'
-      }).then((result) => {
-        if (result.value) {
-          HTTP
-                  .delete(USERS_API+ "/" + userID)
-                  .then(res => {
-                    console.log(res);
-                    this.$swal.fire({
-                              icon: "success",
-                              title:'تم حذف الموظف بنجاح!'
-                            }
-                    )
-                    this.getAllUser();
-                  })
-                  .catch(() => {
-                    console.log("handle server error from here");
-                  });
-        }
-      })
-
-    },
-
-    rowClicked(userID) {
-      this.$router.push({ name: "User", params: { userID: userID } });
+      HTTP.get(
+          WITHDRAW_API +
+          "?page=" +
+          this.branches.current_page
+      )
+          .then(res => {
+            console.log(res);
+            if (res.data.data.length !== 0) {
+              this.branches = res.data;
+              this.isLoading = false;
+            }
+          })
+          .catch(() => {
+            console.log("handle hhh server error from here");
+          });
     }
   }
-};
+}
 </script>
+
+<style scoped>
+
+</style>

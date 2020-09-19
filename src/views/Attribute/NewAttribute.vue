@@ -60,8 +60,8 @@
 </template>
 
 <script>
-import localVar, { ATTRIBUTE_API } from "../LocalVar";
-import { HTTP } from "../http-common";
+import localVar, { ATTRIBUTE_API } from "../../LocalVar";
+import { HTTP } from "../../http-common";
 import {minLength, required} from "vuelidate/lib/validators";
 
 export default {

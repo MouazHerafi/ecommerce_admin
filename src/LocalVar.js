@@ -15,6 +15,8 @@ export const ATTRIBUTESBRANCH_API = "showAttributeBranch";
 export const SYNCATTRIBUTES_API =  "syncAttributes";
 export const CARDS_API = "deposit";
 export const RECEIVABLETOPAY_API = "receivablesToPay";
+export const ALLDEPOSIT_API = "allDeposit";
+export const WITHDRAW_API = "withdraw";
 export default {
   get_api_address() {
     return "http://localhost:8000/api/v1/";

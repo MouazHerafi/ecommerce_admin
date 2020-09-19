@@ -8,11 +8,19 @@
     <div class="row text-center quick-statics">
       <div class="col-lg-3 col-sm-6">
         <div class="content-block">
+
           <div>
             <i class="fa fa-users block-icon" aria-hidden="true"></i>المسجلين
             لهذا اليوم
           </div>
-          <div class="number">548</div>
+          <loading
+              :active.sync="showLoader"
+              :is-full-page="false"
+              color="blue"
+              :width="40"
+              :height="40"
+          ></loading>
+          <div class="number">{{ data.allCustomerInDay }}</div>
           <div class="note">
             <span style="color: #27ae60">33%</span> ارتفاع عن نتيجة الأمس
           </div>
@@ -21,30 +29,37 @@
       <div class="col-lg-3 col-sm-6">
         <div class="content-block green-background text-white">
           <div>
-            <i class="fa fa-dollar block-icon" aria-hidden="true"></i> أرباح
-            اليوم
+            <i class="block-icon" aria-hidden="true"></i>  الرصيد المتوفر لدي
+
           </div>
-          <div class="number">9,480$</div>
-          <div class="note text-white">3% زيادة</div>
+          <loading
+              :active.sync="showLoader"
+              :is-full-page="false"
+              color="blue"
+              :width="40"
+              :height="40"
+          ></loading>
+          <div class="number">{{ data.adminBalance }}</div>
+          <div class="note text-white">ليرة سورية</div>
           <i class="fa fa-dollar block-back-icon" aria-hidden="true"></i>
         </div>
       </div>
       <div class="col-lg-3 col-sm-6">
-        <div class="content-block red-background text-white">
+        <div class="content-block green-background text-white">
           <div>
-            <i class="fa fa-truck block-icon" aria-hidden="true"></i>منتجات نفذ
-            مخزونها
+            <i class="block-icon" aria-hidden="true"></i>    الرصيد الكلي المتوفر
+
           </div>
-          <div class="number">3</div>
-          <div class="note">
-            <a
-              class="text-white font-italic"
-              style="text-decoration: underline"
-              href="#"
-              >تصفح المنتجات</a
-            >
-          </div>
-          <i class="fa fa-close block-back-icon" aria-hidden="true"></i>
+          <loading
+              :active.sync="showLoader"
+              :is-full-page="false"
+              color="blue"
+              :width="40"
+              :height="40"
+          ></loading>
+          <div class="number">{{ data.allBalance }}</div>
+          <div class="note text-white">ليرة سورية</div>
+          <i class="fa fa-dollar block-back-icon" aria-hidden="true"></i>
         </div>
       </div>
       <div class="col-lg-3 col-sm-6">
@@ -53,7 +68,14 @@
             <i class="fa fa-users block-icon" aria-hidden="true"></i>المسجلين في
             الموقع
           </div>
-          <div class="number">72,742</div>
+          <loading
+              :active.sync="showLoader"
+              :is-full-page="false"
+              color="blue"
+              :width="40"
+              :height="40"
+          ></loading>
+          <div class="number">{{ data.allCustomer }}</div>
           <div class="note"><span style="color: #27ae60">33%</span> زيادة</div>
         </div>
       </div>
@@ -69,17 +91,13 @@
           <div class="block-head clearfix">
             <div class="float-right">
               <i class="fa fa-line-chart block-icon" aria-hidden="true"></i
-              >احصائيات الزوار والطلبات
+              >احصائيات الشركات والطلبات
             </div>
-            <button class="btn float-left calender-button">
-              <i class="fa fa-calendar block-icon" aria-hidden="true"></i>
-              <span class="hidden-xs-down">
-                20 ديسمبر، 2016 - 31 ديسمبر، 2016
-                <i class="fa fa-caret-down " aria-hidden="true"></i>
-              </span>
-            </button>
           </div>
-          <canvas id="visitorsVsSales"></canvas>
+          <D3LineChart
+            :config="chart_config1"
+            :datum="chart_data1"
+          ></D3LineChart>
         </div>
         <!--نهاية عنصر احصائيات الزوار والطلبات-->
 
@@ -621,7 +639,10 @@
               <div class="note">
                 <span style="color: #27ae60">33%</span> ارتفاع عن نتيجة الأمس
               </div>
-              <canvas id="dailySalesChart"></canvas>
+              <D3PieChart
+                :config="chart_config"
+                :datum="chart_data"
+              ></D3PieChart>
             </div>
           </div>
 
@@ -717,8 +738,73 @@
 </template>
 
 <script>
+import { D3PieChart, D3LineChart } from "vue-d3-charts";
+import {HTTP} from "@/http-common";
+//import {HTTP} from "@/http-common";
 export default {
   name: "AppDashboard",
-  components: {}
+  components: { D3PieChart, D3LineChart },
+  data() {
+    return {
+      showLoader:false,
+      data: {
+        allCustomer:"",
+        allCustomerInDay:"",
+        adminBalance: "",
+        allBalance:""
+
+      },
+      chart_data: [
+        { hours: 20, name: "الالكترونيات" },
+        { hours: 30, name: "الموضة" },
+        { hours: 31, name: "البيت و المطبخ" },
+        { hours: 10, name: "الثقافة والفن" },
+        { hours: 40, name: "الأدوات الصناعية" },
+        { hours: 35, name: "الجمال والصحة" },
+        { hours: 70, name: "الألبسة والأحذية" }
+      ],
+      chart_config: {
+        key: "name",
+        value: "hours",
+        color: { scheme: "schemeTableau10" },
+        radius: { inner: 100 }
+      },
+      chart_data1: [
+        {  total: 2, month: 1 },
+        {  total: 10, month: 2 },
+        {  total: 30, month: 3 },
+        {  total: 35, month: 4 },
+        { total: 50, month: 5 },
+        {  total: 100, month: 6 }
+      ],
+      chart_config1: {
+        values: ["total"],
+        date: {
+          key: "month",
+          inputFormat: "%M",
+          outputFormat: "%M"
+        },
+        axis: {
+          yTitle: "عدد الطلبات",
+          yTicks: 5,
+          yFormat: ".0f",
+          xFormat: "%m",
+        }
+      }
+    };
+  },
+  async mounted() {
+    this.showLoader = true;
+    await HTTP.get("dashHome")
+        .then(res => {
+          console.log(res);
+
+          this.data = res.data.data;
+          this.showLoader = false;
+        })
+        .catch(() => {
+          console.log("handle server error from here");
+        });
+  }
 };
 </script>

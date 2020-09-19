@@ -21,10 +21,15 @@
               <a href="#">المستحقات</a>
             </li>
             </router-link>
-            <router-link to="/companies">
+            <router-link to="/deposit">
             <li>
-              <a href="#">الدفعات</a>
+              <a href="#">عمليات الإيداع</a>
             </li>
+            </router-link>
+            <router-link to="/withdraw">
+              <li>
+                <a href="#">عمليات السحب</a>
+              </li>
             </router-link>
             <li>
               <a data-toggle="modal"
@@ -72,9 +77,9 @@
               <router-link to="/orders">
                 <li @click="close()"><a @click="close()"><i class="fa fa-shopping-cart"></i>الطلبات</a></li>
               </router-link>
-              <router-link to="/coupons">
+              <!--<router-link to="/coupons">
                 <li @click="close()"><a @click="close()"><i class="fa fa-shopping-cart"></i>الحسومات</a></li>
-              </router-link>
+              </router-link>-->
               <router-link to="/new-attribute">
                 <li @click="close()"><a @click="close()"><i class="fa fa-tags"></i>إضافة صفة جديدة</a></li>
               </router-link>

@@ -21,12 +21,16 @@ import Product from "../views/Product/Product.vue";
 import Coupons from "../views/Coupon/Coupons.vue";
 import Coupon from "../views/Coupon/Coupon.vue";
 import AddCoupon from "../views/Coupon/AddCoupon.vue";
-import NewAttribute from "../views/NewAttribute";
-import ManageAttributes from "../views/Branch/ManageAttributes";
+import NewAttribute from "../views/Attribute/NewAttribute";
+import ManageAttributes from "../views/Attribute/ManageAttributes";
 import Customers from "../views/Customer/Customers";
 import Orders from "../views/Order/Orders";
 import Order from "../views/Order/Order";
-import ReceivablesToPay from "../views/Branch/ReceivablesToPay";
+import ReceivablesToPay from "../views/Accounting/ReceivablesToPay";
+import Deposit from "../views/Accounting/Deposit";
+import WithDraw from "@/views/Accounting/WithDraw";
+import NewWithDraw from "@/views/Accounting/NewWithDraw";
+import NewDeposit from "@/views/Accounting/NewDeposit";
 
 Vue.use(VueRouter);
 
@@ -309,6 +313,58 @@ const routes = [
         },
         name: "Receivables",
         component: ReceivablesToPay
+      },
+      {
+        path: "deposit",
+        meta: {
+          label: "Deposit"
+        },
+        component: {
+          render(c) {
+            return c("router-view");
+          }
+        },
+        children: [
+          {
+            path: "",
+            name: "Deposit",
+            component: Deposit
+          },
+          {
+            path: "add",
+            meta: {
+              label: "Add Deposit"
+            },
+            name: "NewDeposit",
+            component: NewDeposit
+          }
+        ]
+      },
+      {
+        path: "withdraw",
+        meta: {
+          label: "WithDraw"
+        },
+        component: {
+          render(c) {
+            return c("router-view");
+          }
+        },
+        children: [
+          {
+            path: "",
+            name: "WithDraw",
+            component: WithDraw
+          },
+          {
+            path: "add",
+            meta: {
+              label: "Add WithDraw"
+            },
+            name: "NewWithDraw",
+            component: NewWithDraw
+          }
+        ]
       }
     ]
   },
